@@ -11,6 +11,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "wrangler.jsonc"
+      - "scripts/deploy-ci.sh"
   workflow_dispatch:
 
 concurrency:
@@ -30,7 +31,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - name: Deploy to Cloudflare
+      - name: Build
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: npm run build
+      - name: Build and deploy to Cloudflare
         if: env.CLOUDFLARE_API_TOKEN != ''
-        run: npx wrangler deploy
+        run: scripts/deploy-ci.sh "Deploy ${{ github.sha }}"

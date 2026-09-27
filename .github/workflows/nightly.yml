@@ -3,7 +3,10 @@ name: Nightly Cricsheet update
 
 on:
   schedule:
-    - cron: "30 5 * * *"   # 05:30 UTC
+    # Cricsheet publishes in irregular batches, usually between 12:00 and 23:30 UTC (the biggest
+    # ones late in the UK evening), judging by the Last-Modified times on its downloads.
+    # 00:30 UTC catches everything published that day and avoids GitHub's busy top of the hour.
+    - cron: "30 0 * * *"
   workflow_dispatch:
 
 permissions:
@@ -60,7 +63,7 @@ jobs:
 
       - name: Build and deploy the site
         if: steps.update.outputs.changed == 'true' && env.CLOUDFLARE_API_TOKEN != ''
-        run: npm run build && npx wrangler deploy
+        run: scripts/deploy-ci.sh "Nightly Cricsheet update"
 
       - name: Commit refreshed explorer data
         if: steps.update.outputs.changed == 'true'
