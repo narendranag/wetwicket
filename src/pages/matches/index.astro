@@ -1,0 +1,63 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import ArchiveNav from '../../components/data/ArchiveNav.astro';
+import MatchRow from '../../components/data/MatchRow.astro';
+import DataCredit from '../../components/DataCredit.astro';
+import { all, one, cacheFor } from '../../lib/db';
+import { FORMAT_ORDER, fmtDay } from '../../lib/cricket';
+import '../../styles/data.css';
+
+cacheFor(Astro.response);
+const q = Astro.url.searchParams;
+const fmt = FORMAT_ORDER.includes(q.get('fmt') ?? '') ? q.get('fmt')! : '';
+const gender = ['male', 'female'].includes(q.get('gender') ?? '') ? q.get('gender')! : '';
+const rain = q.get('rain') === '1';
+const page = Math.max(1, parseInt(q.get('page') ?? '1') || 1);
+const PER = 50;
+const where = ['1=1'];
+const params: unknown[] = [];
+if (fmt) { where.push('fmt = ?'); params.push(fmt); }
+if (gender) { where.push('gender = ?'); params.push(gender); }
+if (rain) where.push("rain != ''");
+const [rows, count, meta] = await Promise.all([
+  all(`SELECT * FROM matches WHERE ${where.join(' AND ')} ORDER BY date DESC, id DESC LIMIT ? OFFSET ?`, ...params, PER, (page - 1) * PER),
+  one<{ n: number }>(`SELECT COUNT(*) AS n FROM matches WHERE ${where.join(' AND ')}`, ...params),
+  one<{ value: string }>("SELECT value FROM meta WHERE key = 'latest_match'"),
+]);
+const pages = Math.ceil((count?.n ?? 0) / PER);
+const link = (over: Record<string, string>) => {
+  const p = new URLSearchParams({ ...(fmt && { fmt }), ...(gender && { gender }), ...(rain && { rain: '1' }), ...over });
+  for (const [k, v] of [...p]) if (!v) p.delete(k);
+  const s = p.toString();
+  return `/matches/${s ? `?${s}` : ''}`;
+};
+---
+<Base title="Matches" description="Every match in the Wet Wicket archive: scorecards, worms and Manhattans for more than 22,000 matches from Cricsheet.">
+  <div class="d-page">
+    <ArchiveNav />
+    <header class="d-head">
+      <h1>Matches</h1>
+      <p class="sub">{(count?.n ?? 0).toLocaleString('en')} matches{meta ? `, up to ${fmtDay(meta.value)}` : ''}. Every one has a full scorecard.</p>
+    </header>
+    <div class="filters" aria-label="Format">
+      <a class="chip" href={link({ fmt: '', page: '' })} aria-current={!fmt ? 'page' : undefined}>All formats</a>
+      {FORMAT_ORDER.map((f) => <a class="chip" href={link({ fmt: f, page: '' })} aria-current={fmt === f ? 'page' : undefined}>{f}</a>)}
+    </div>
+    <div class="filters" aria-label="Players">
+      <a class="chip" href={link({ gender: '', page: '' })} aria-current={!gender ? 'page' : undefined}>Men and women</a>
+      <a class="chip" href={link({ gender: 'male', page: '' })} aria-current={gender === 'male' ? 'page' : undefined}>Men</a>
+      <a class="chip" href={link({ gender: 'female', page: '' })} aria-current={gender === 'female' ? 'page' : undefined}>Women</a>
+      <a class="chip" href={link({ rain: rain ? '' : '1', page: '' })} aria-current={rain ? 'page' : undefined}>Rain-affected only</a>
+    </div>
+    <div class="panel">
+      <ul class="list">{rows.map((m) => <MatchRow m={m} />)}</ul>
+    </div>
+    <nav class="pager" aria-label="Pages">
+      {page > 1 && <a href={link({ page: String(page - 1) })}>Newer</a>}
+      <span class="muted">Page {page} of {pages}</span>
+      {page < pages && <a href={link({ page: String(page + 1) })}>Older</a>}
+    </nav>
+  </div>
+  <DataCredit />
+</Base>

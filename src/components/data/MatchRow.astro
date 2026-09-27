@@ -1,0 +1,15 @@
+---
+import { fmtDay, score, type Summary } from '../../lib/cricket';
+interface Props { m: Record<string, any>; showFormat?: boolean }
+const { m, showFormat = true } = Astro.props;
+const inns: Summary[] = JSON.parse(m.summary || '[]').filter((s: Summary) => !s.super_over);
+const scores = (team: string) => inns.filter((s) => s.team === team).map((s) => score(s.runs, s.wkts, s.declared)).join(' & ');
+---
+<li>
+  <a class="mrow" href={`/matches/${m.id}/`}>
+    <span class="date">{fmtDay(m.date)}</span>
+    <span><span class="teams">{m.team1} {scores(m.team1)} v {m.team2} {scores(m.team2)}</span>{m.rain ? <> <span class="pill rain">Rain</span></> : null}</span>
+    <span class="fmt">{showFormat ? `${m.gender === 'female' ? 'W ' : ''}${m.fmt}` : ''}</span>
+    <span class="res">{m.outcome_text}{m.event_name ? ` · ${m.event_name}${m.event_detail ? `, ${m.event_detail}` : ''}` : ''}</span>
+  </a>
+</li>

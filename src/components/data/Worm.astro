@@ -1,0 +1,32 @@
+---
+// Cumulative runs by over for each side (limited-overs only), with wickets as dots.
+interface Series { team: string; color: string; overs: number[][] } // [over, runs, wkts, cum, cumW]
+interface Props { series: Series[]; maxOvers: number }
+const { series, maxOvers } = Astro.props;
+const W = 720, H = 280, L = 40, R = 16, T = 12, B = 32;
+const top = Math.max(50, ...series.flatMap((s) => s.overs.map((o) => o[3])));
+const yStep = [25, 50, 100].find((s) => top / s <= 6) ?? 100;
+const yMax = Math.ceil(top / yStep) * yStep;
+const x = (o: number) => L + (o / maxOvers) * (W - L - R);
+const y = (r: number) => T + (1 - r / yMax) * (H - T - B);
+const xStep = maxOvers <= 20 ? 5 : 10;
+const yTicks = Array.from({ length: yMax / yStep + 1 }, (_, i) => i * yStep);
+const xTicks = Array.from({ length: Math.floor(maxOvers / xStep) + 1 }, (_, i) => i * xStep);
+---
+<div class="chart">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Runs by over for each side">
+    {yTicks.map((v) => (<><line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke="var(--grid)" /><text x={L - 6} y={y(v) + 4} text-anchor="end">{v}</text></>))}
+    {xTicks.map((v) => <text x={x(v)} y={H - 12} text-anchor="middle">{v}</text>)}
+    {series.map((s) => (
+      <>
+        <path d={'M' + x(0) + ',' + y(0) + s.overs.map((o) => `L${x(o[0]).toFixed(1)},${y(o[3]).toFixed(1)}`).join('')}
+          fill="none" stroke={s.color} stroke-width="2" stroke-linejoin="round" />
+        {s.overs.filter((o) => o[2] > 0).map((o) => (
+          <circle cx={x(o[0])} cy={y(o[3])} r="4.5" fill={s.color} stroke="var(--surface)" stroke-width="2">
+            <title>{`${s.team}: ${o[2]} wicket${o[2] > 1 ? 's' : ''} in over ${o[0]}, ${o[3]}/${o[4]}`}</title>
+          </circle>
+        ))}
+      </>
+    ))}
+  </svg>
+</div>

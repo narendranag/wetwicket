@@ -9,7 +9,12 @@ interface Props {
 }
 const { title, description, fonts } = Astro.props;
 const path = Astro.url.pathname;
-const NAV = [{ id: 'series', name: 'Series', plain: 'Deep dives' }, ...SECTIONS];
+const ARCHIVE = ['/matches/', '/players/', '/competitions/', '/grounds/'];
+const NAV = [
+  { href: '/series/', name: 'Series', plain: 'Deep dives', match: ['/series/'] },
+  ...SECTIONS.map((s) => ({ href: `/${s.id}/`, name: s.name, plain: s.plain, match: [`/${s.id}/`] })),
+  { href: '/matches/', name: 'The Archive', plain: 'Matches & players', match: ARCHIVE },
+];
 const FONTS = fonts ?? 'family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500';
 const fullTitle = path === '/' ? title : `${title} · Wet Wicket`;
 ---
@@ -42,7 +47,7 @@ const fullTitle = path === '/' ? title : `${title} · Wet Wicket`;
       <ul>
         {NAV.map((s) => (
           <li>
-            <a href={`/${s.id}/`} aria-current={path.startsWith(`/${s.id}/`) ? 'page' : undefined}>
+            <a href={s.href} aria-current={s.match.some((m) => path.startsWith(m)) ? 'page' : undefined}>
               <span class="nav-name">{s.name}</span><span class="nav-plain">{s.plain}</span>
             </a>
           </li>

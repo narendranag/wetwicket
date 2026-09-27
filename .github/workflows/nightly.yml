@@ -1,0 +1,71 @@
+# Nightly: pull what Cricsheet added, update D1, and redeploy if anything changed.
+name: Nightly Cricsheet update
+
+on:
+  schedule:
+    - cron: "30 5 * * *"   # 05:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      # The match database carries over between runs. On a cold cache, update.py rebuilds it
+      # from Cricsheet's full archive.
+      - name: Restore match database
+        uses: actions/cache/restore@v4
+        with:
+          path: data/wetwicket.sqlite
+          key: wetwicket-db-${{ github.run_id }}
+          restore-keys: wetwicket-db-
+
+      - name: Fetch and ingest Cricsheet changes
+        id: update
+        run: python pipeline/update.py
+
+      - name: Save match database
+        if: always() && hashFiles('data/wetwicket.sqlite') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: data/wetwicket.sqlite
+          key: wetwicket-db-${{ github.run_id }}
+
+      - name: Apply changes to D1
+        if: steps.update.outputs.changed == 'true' && env.CLOUDFLARE_API_TOKEN != ''
+        run: npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
+
+      - name: Build and deploy the site
+        if: steps.update.outputs.changed == 'true' && env.CLOUDFLARE_API_TOKEN != ''
+        run: npm run build && npx wrangler deploy
+
+      - name: Commit refreshed explorer data
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          git config user.name "wetwicket-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/rain.json
+          git diff --cached --quiet || git commit -m "Nightly Cricsheet update: refresh rain-hit matches" && git push

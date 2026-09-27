@@ -1,0 +1,56 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import ArchiveNav from '../../components/data/ArchiveNav.astro';
+import DataCredit from '../../components/DataCredit.astro';
+import { all, cacheFor } from '../../lib/db';
+import '../../styles/data.css';
+
+cacheFor(Astro.response);
+const q = (Astro.url.searchParams.get('q') ?? '').trim().slice(0, 60);
+// Search the Register's names and name variants; rank by matches in the archive.
+const rows = q
+  ? await all(
+      `SELECT p.id, p.name, p.unique_name, COUNT(mp.match_id) AS matches, MIN(m.date) AS first, MAX(m.date) AS last
+       FROM people p JOIN match_players mp ON mp.player_id = p.id JOIN matches m ON m.id = mp.match_id
+       WHERE p.id IN (SELECT id FROM people WHERE name LIKE ?1 OR unique_name LIKE ?1
+                      UNION SELECT id FROM people_names WHERE name LIKE ?1)
+       GROUP BY p.id ORDER BY matches DESC LIMIT 60`, `%${q}%`)
+  : await all(
+      `SELECT p.id, p.name, p.unique_name, COUNT(*) AS matches, MIN(m.date) AS first, MAX(m.date) AS last
+       FROM match_players mp JOIN people p ON p.id = mp.player_id JOIN matches m ON m.id = mp.match_id
+       WHERE m.team_type = 'international' GROUP BY p.id ORDER BY matches DESC LIMIT 40`);
+---
+<Base title="Players" description="Every player in the Wet Wicket archive, with career numbers by format built from Cricsheet ball-by-ball data.">
+  <div class="d-page">
+    <ArchiveNav />
+    <header class="d-head">
+      <h1>Players</h1>
+      <p class="sub">Every player and official in the Cricsheet Register, linked to their matches here and to ESPNcricinfo and CricketArchive.</p>
+    </header>
+    <form class="search" method="get" action="/players/" role="search">
+      <label for="q" class="sr-only">Player name</label>
+      <input id="q" name="q" type="search" value={q} placeholder="Search by name, e.g. Perry, Kohli, Stokes" autocomplete="off">
+      <button type="submit">Search</button>
+    </form>
+    <div class="panel">
+      <h2>{q ? `Players matching “${q}”` : 'Most matches in international cricket'}</h2>
+      {rows.length ? (
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Player</th><th class="r">Matches</th><th>First</th><th>Latest</th></tr></thead>
+            <tbody>
+              {rows.map((p) => (
+                <tr><td><a href={`/players/${p.id}/`}>{p.name}</a>{p.unique_name !== p.name && <span class="muted small"> ({p.unique_name})</span>}</td>
+                  <td class="r">{p.matches}</td><td>{p.first?.slice(0, 4)}</td><td>{p.last?.slice(0, 4)}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : <p class="note">No players found. Cricsheet uses initials with surnames, such as “EA Perry”, so try the surname alone.</p>}
+    </div>
+    <p class="note">The archive covers matches Cricsheet holds ball-by-ball data for, so careers that began before the 2000s are incomplete.</p>
+  </div>
+  <DataCredit />
+</Base>
+<style>.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }</style>

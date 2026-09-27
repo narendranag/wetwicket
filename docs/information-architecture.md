@@ -28,6 +28,7 @@ breakdowns of epic matches, browser games, essays and tools.
 | The Nets | Games | `/nets/` | Simple browser games |
 | The Long Room | Essays | `/long-room/` | Long-form writing |
 | Scorebook | Tools | `/scorebook/` | Things you use rather than read: explorers, calculators |
+| The Archive | Matches & players | `/matches/` | Every match, player, competition and ground in Cricsheet, rendered from D1 |
 
 Supporting pages: `/` (front page), `/tags/<tag>/`, `/authors/<author>/`, `/glossary/`,
 `/about/`, `/rss.xml`.
@@ -44,7 +45,20 @@ Supporting pages: `/` (front page), `/tags/<tag>/`, `/authors/<author>/`, `/glos
 /nets/<game>/                             e.g. /nets/beat-the-par/
 /long-room/<slug>/
 /tags/<tag>/  /authors/<slug>/  /glossary/#<term>
+
+/matches/?fmt=&gender=&rain=&page=        The Archive: every match, newest first
+/matches/<cricsheet-id>/                  Scorecard, worm, Manhattan, fall of wickets, partnerships
+/players/?q=   /players/<register-id>/    Search; career numbers by format, links out via the Register
+/competitions/<slug>/<season>/            e.g. /competitions/indian-premier-league/2023/ ("2023/24" -> "2023-24")
+/grounds/<slug>/                          How the ground plays, by format
 ```
+
+## The Archive
+
+The Archive is data rather than editorial. Its pages are rendered on request from Cloudflare D1
+(`export const prerender = false`), while everything else is prerendered. The data comes from
+Cricsheet via `pipeline/ingest.py` and is refreshed nightly by `.github/workflows/nightly.yml`.
+Editorial pieces link into the Archive for any match, player or ground they mention.
 
 ## Content model
 

@@ -1,0 +1,48 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import ArchiveNav from '../../components/data/ArchiveNav.astro';
+import DataCredit from '../../components/DataCredit.astro';
+import { all, cacheFor } from '../../lib/db';
+import '../../styles/data.css';
+
+cacheFor(Astro.response);
+const rows = await all(
+  `SELECT v.id, v.name, v.city, v.country, COUNT(m.id) AS matches, MIN(m.date) AS first, MAX(m.date) AS last,
+          SUM(m.rain != '') AS rain
+   FROM venues v JOIN matches m ON m.venue_id = v.id GROUP BY v.id`);
+const byCountry = new Map<string, any[]>();
+for (const r of rows) byCountry.set(r.country || 'Unknown', [...(byCountry.get(r.country || 'Unknown') ?? []), r]);
+const countries = [...byCountry.entries()]
+  .map(([c, vs]) => ({ c, vs: vs.sort((a, b) => b.matches - a.matches), n: vs.reduce((s, v) => s + v.matches, 0) }))
+  .sort((a, b) => b.n - a.n);
+---
+<Base title="Grounds" description="Every ground in the Wet Wicket archive: how it plays, who wins the toss and what they do with it, and how often it rains.">
+  <div class="d-page">
+    <ArchiveNav />
+    <header class="d-head">
+      <h1>Grounds</h1>
+      <p class="sub">{rows.length} grounds in {countries.length} countries. Host countries are added by Wet Wicket.</p>
+    </header>
+    <nav class="filters" aria-label="Countries">
+      {countries.map((c) => <a class="chip" href={`#${c.c.toLowerCase().replace(/[^a-z]+/g, '-')}`}>{c.c}</a>)}
+    </nav>
+    {countries.map((c) => (
+      <section class="panel" id={c.c.toLowerCase().replace(/[^a-z]+/g, '-')}>
+        <h2>{c.c} <span class="muted">{c.n.toLocaleString('en')} matches</span></h2>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Ground</th><th>City</th><th class="r">Matches</th><th>Span</th><th class="r">Rain-hit</th></tr></thead>
+            <tbody>
+              {c.vs.map((v) => (
+                <tr><td><a href={`/grounds/${v.id}/`}>{v.name}</a></td><td class="muted">{v.city !== v.name ? v.city : ''}</td><td class="r">{v.matches}</td>
+                  <td>{v.first.slice(0, 4)}{v.last.slice(0, 4) !== v.first.slice(0, 4) ? `–${v.last.slice(0, 4)}` : ''}</td><td class="r">{v.rain}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))}
+  </div>
+  <DataCredit />
+</Base>

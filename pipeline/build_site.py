@@ -1,8 +1,10 @@
 """Export the data the site reads: public/data/rain.json (rain-hit matches) and public/data/replay.json (analysis)."""
-import collections
 import json
 import math
 import os
+
+import sqlite3
+import sys
 
 import pandas as pd
 
@@ -10,21 +12,11 @@ from rain_rules import se_resource
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "public", "data")
+DB = os.path.join(ROOT, "data", "wetwicket.sqlite")
 RULES = ("ARR", "MPO", "DL-SE", "DL-Pro", "DL-Pro-avg", "DL-refit")
 # Real ODIs, replayed as if rain ended play after 30 overs of the chase.
 EXAMPLES = [("2018-06-24", "Australia"), ("2009-12-15", "India"), ("2019-02-27", "England"),
             ("2016-01-20", "Australia"), ("2006-03-12", "Australia")]
-
-
-def fmt_group(r):
-    t = r.match_type
-    if t in ("Test", "ODI"):
-        return t
-    if t == "IT20" or (t == "T20" and r.team_type == "international"):
-        return "T20I"
-    if t == "T20":
-        return "T20 league"
-    return "One-day (other)" if t == "ODM" else "First-class"
 
 
 def write(name, data):
@@ -35,18 +27,18 @@ def write(name, data):
 
 
 def rain_data():
-    df = pd.read_csv(os.path.join(ROOT, "data", "matches_rain_flags.csv"), dtype=str).fillna("")
-    df["fmt"] = df.apply(fmt_group, axis=1)
-    df["year"] = df.date.str[:4].astype(int)
-    totals = collections.Counter(zip(df.fmt, df.country, df.year, df.gender))
-    rain = df[df.rain_affected != ""]
-    cols = ["date", "fmt", "gender", "event", "team1", "team2", "venue", "country",
-            "outcome", "rain_affected", "stage", "reason", "method", "match_id"]
-    return {
-        "matches": rain[cols].values.tolist(),
-        "totals": [[f, c, y, g, n] for (f, c, y, g), n in totals.items()],
-        "updated": df.date.max(),
-    }
+    """Rain-hit matches for the Rain Stopped Play explorer, from the match database."""
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    # The explorer groups formats more coarsely than the archive: The Hundred counts as a T20 league.
+    fmt = "CASE fmt WHEN 'The Hundred' THEN 'T20 league' ELSE fmt END"
+    totals = con.execute(f"""SELECT {fmt} AS f, country, CAST(substr(date, 1, 4) AS INT) AS y, gender, COUNT(*) AS n
+                             FROM matches GROUP BY f, country, y, gender""").fetchall()
+    rows = con.execute(f"""SELECT date, {fmt} AS f, gender, COALESCE(event_name, '') AS event, team1, team2, venue, country,
+                                  outcome_text, rain, COALESCE(rain_stage, ''), rain_reason, COALESCE(method, ''), id
+                           FROM matches WHERE rain != '' ORDER BY date DESC, id DESC""").fetchall()
+    latest = con.execute("SELECT MAX(date) FROM matches").fetchone()[0]
+    return {"matches": [list(r) for r in rows], "totals": [list(t) for t in totals], "updated": latest}
 
 
 def replay_data():
@@ -81,7 +73,8 @@ def replay_data():
 def main():
     os.makedirs(OUT, exist_ok=True)
     write("rain.json", rain_data())
-    write("replay.json", replay_data())
+    if "--rain-only" not in sys.argv:  # the replay analysis is rebuilt by hand, not nightly
+        write("replay.json", replay_data())
 
 
 if __name__ == "__main__":

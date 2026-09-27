@@ -1,0 +1,94 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import ArchiveNav from '../../components/data/ArchiveNav.astro';
+import MatchRow from '../../components/data/MatchRow.astro';
+import DataCredit from '../../components/DataCredit.astro';
+import { all, one, cacheFor } from '../../lib/db';
+import { oversFrom, avg, rate, genderLabel } from '../../lib/cricket';
+import { batting, bowling, cricinfoUrl, cricketArchiveUrl, type BatRow, type BowlRow } from '../../lib/career';
+import '../../styles/data.css';
+
+const { id } = Astro.params;
+const p = await one('SELECT * FROM people WHERE id = ?', id);
+if (!p) return new Response(null, { status: 404, statusText: 'Player not found' });
+cacheFor(Astro.response);
+
+const NOT_SUPER = 'EXISTS (SELECT 1 FROM innings i WHERE i.match_id = x.match_id AND i.inn = x.inn AND i.super_over = 0)';
+const [bat, bowl, played, recent, teams] = await Promise.all([
+  all<BatRow>(`SELECT x.match_id, m.fmt, m.gender, x.runs, x.balls, x.fours, x.sixes, x.out FROM batting x JOIN matches m ON m.id = x.match_id WHERE x.player_id = ? AND ${NOT_SUPER}`, id),
+  all<BowlRow>(`SELECT x.match_id, m.fmt, m.gender, x.balls, x.runs, x.wkts, x.maidens, m.balls_per_over AS bpo FROM bowling x JOIN matches m ON m.id = x.match_id WHERE x.player_id = ? AND ${NOT_SUPER}`, id),
+  all('SELECT m.fmt, COUNT(*) AS n, MIN(m.date) AS first, MAX(m.date) AS last FROM match_players mp JOIN matches m ON m.id = mp.match_id WHERE mp.player_id = ? GROUP BY m.fmt', id),
+  all('SELECT m.* FROM match_players mp JOIN matches m ON m.id = mp.match_id WHERE mp.player_id = ? ORDER BY m.date DESC LIMIT 15', id),
+  all('SELECT mp.team, COUNT(*) AS n FROM match_players mp WHERE mp.player_id = ? GROUP BY mp.team ORDER BY n DESC LIMIT 8', id),
+]);
+const batStats = batting(bat);
+const bowlStats = bowling(bowl.filter((b) => b.balls > 0));
+const matchesByFmt = Object.fromEntries(played.map((r) => [r.fmt, r.n]));
+const total = played.reduce((s, r) => s + r.n, 0);
+const first = played.map((r) => r.first).sort()[0];
+const last = played.map((r) => r.last).sort().at(-1);
+const gender = recent[0]?.gender;
+---
+<Base title={p.name} description={`${p.name}: ${total} matches in the Wet Wicket archive${first ? `, ${first.slice(0, 4)}–${last.slice(0, 4)}` : ''}. Batting and bowling by format, from Cricsheet ball-by-ball data.`}>
+  <div class="d-page">
+    <ArchiveNav />
+    <header class="d-head">
+      <div class="crumbs"><a href="/players/">Players</a>{gender && <><span aria-hidden="true">/</span><span>{genderLabel(gender)} cricket</span></>}</div>
+      <h1>{p.name}</h1>
+      <p class="sub">
+        {p.unique_name !== p.name && <>{p.unique_name} · </>}
+        {total} matches{first && ` · ${first.slice(0, 4)}–${last.slice(0, 4)}`}
+        {teams.length > 0 && <> · {teams.map((t) => t.team).join(', ')}</>}
+      </p>
+      <p class="sub">
+        {p.key_cricinfo && <a href={cricinfoUrl(p.name, p.key_cricinfo)}>ESPNcricinfo profile</a>}
+        {p.key_cricinfo && p.key_cricketarchive && ' · '}
+        {p.key_cricketarchive && <a href={cricketArchiveUrl(p.key_cricketarchive)}>CricketArchive</a>}
+      </p>
+    </header>
+
+    {batStats.length > 0 && (
+      <section class="panel">
+        <h2>Batting</h2>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Format</th><th class="r">M</th><th class="r">Inns</th><th class="r">NO</th><th class="r">Runs</th><th class="r">HS</th><th class="r">Avg</th><th class="r">SR</th><th class="r">100</th><th class="r">50</th><th class="r">4s</th><th class="r">6s</th></tr></thead>
+            <tbody>
+              {batStats.map((s) => (
+                <tr><td>{s.fmt}</td><td class="r">{matchesByFmt[s.fmt] ?? s.matches}</td><td class="r">{s.inns}</td><td class="r">{s.notOut}</td><td class="r"><b>{s.runs}</b></td>
+                  <td class="r"><a href={`/matches/${s.hsMatch}/`}>{s.hs}</a></td><td class="r">{avg(s.runs, s.outs)}</td><td class="r">{rate(s.runs, s.balls, 100)}</td>
+                  <td class="r">{s.hundreds}</td><td class="r">{s.fifties}</td><td class="r">{s.fours}</td><td class="r">{s.sixes}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
+
+    {bowlStats.length > 0 && (
+      <section class="panel">
+        <h2>Bowling</h2>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Format</th><th class="r">Inns</th><th class="r">Overs</th><th class="r">Mdns</th><th class="r">Runs</th><th class="r">Wkts</th><th class="r">Best</th><th class="r">Avg</th><th class="r">Econ</th><th class="r">SR</th><th class="r">5w</th></tr></thead>
+            <tbody>
+              {bowlStats.map((s) => (
+                <tr><td>{s.fmt}</td><td class="r">{s.inns}</td><td class="r">{oversFrom(s.balls, s.bpo)}</td><td class="r">{s.maidens}</td><td class="r">{s.runs}</td><td class="r"><b>{s.wkts}</b></td>
+                  <td class="r"><a href={`/matches/${s.bestMatch}/`}>{s.best}</a></td><td class="r">{avg(s.runs, s.wkts)}</td><td class="r">{rate(s.runs, s.balls, s.bpo)}</td>
+                  <td class="r">{s.wkts ? (s.balls / s.wkts).toFixed(1) : '–'}</td><td class="r">{s.fiveFors}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
+
+    <section class="panel">
+      <h2>Latest matches</h2>
+      <ul class="list">{recent.map((m) => <MatchRow m={m} />)}</ul>
+    </section>
+    <p class="note">Numbers cover only the matches in Cricsheet's ball-by-ball archive, so they can differ from official career records, especially for careers that started before the mid-2000s.</p>
+  </div>
+  <DataCredit />
+</Base>

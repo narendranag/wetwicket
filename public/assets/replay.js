@@ -170,7 +170,7 @@ function renderExamples() {
     return `<tr><td class="num">${e.date}</td><td><b>${esc(e.team2)}</b> chasing ${e.S + 1} v ${esc(e.team1)}</td>
       <td class="r num">${e.runs}/${e.wkts}</td>${RULES.map(R => cell(R.id)).join("")}
       <td>${esc(e.winner)} won <span class="muted">(${esc(e.team2)} ${e.final})</span></td>
-      <td><a href="https://cricsheet.org/matches/${e.match_id}/" target="_blank" rel="noopener">Scorecard</a></td></tr>`;
+      <td><a href="/matches/${e.match_id}/">Scorecard</a></td></tr>`;
   }).join("");
   $("t-ex").innerHTML = `<table><thead><tr><th>Date</th><th>Chase</th><th class="r">After 30</th>${RULES.map(R => `<th class="r">${R.short} par</th>`).join("")}<th>Real result</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }

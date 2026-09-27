@@ -1,0 +1,74 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import ArchiveNav from '../../components/data/ArchiveNav.astro';
+import MatchRow from '../../components/data/MatchRow.astro';
+import DataCredit from '../../components/DataCredit.astro';
+import { all, one, cacheFor } from '../../lib/db';
+import { FORMAT_ORDER, type Summary } from '../../lib/cricket';
+import '../../styles/data.css';
+
+const { id } = Astro.params;
+const v = await one('SELECT * FROM venues WHERE id = ?', id);
+if (!v) return new Response(null, { status: 404, statusText: 'Ground not found' });
+cacheFor(Astro.response);
+const [matches, recent] = await Promise.all([
+  all('SELECT id, fmt, gender, team1, team2, toss_winner, toss_decision, winner, result, method, rain, summary FROM matches WHERE venue_id = ?', id),
+  all('SELECT * FROM matches WHERE venue_id = ? ORDER BY date DESC LIMIT 12', id),
+]);
+
+// How the ground plays, by format. First-innings averages use completed, rain-free games only.
+const stats = FORMAT_ORDER.map((fmt) => {
+  const ms = matches.filter((m) => m.fmt === fmt);
+  if (!ms.length) return null;
+  const decided = ms.filter((m) => m.winner);
+  const clean = ms.filter((m) => !m.rain && m.winner && !m.method);
+  const first = clean.map((m) => (JSON.parse(m.summary) as Summary[])[0]).filter(Boolean);
+  const tossed = ms.filter((m) => m.toss_decision);
+  const tossWon = decided.filter((m) => m.toss_winner === m.winner).length;
+  const highest = ms.flatMap((m) => (JSON.parse(m.summary) as Summary[]).filter((s) => !s.super_over).map((s) => ({ ...s, id: m.id })))
+    .sort((a, b) => b.runs - a.runs)[0];
+  return {
+    fmt, n: ms.length,
+    firstAvg: first.length ? Math.round(first.reduce((s, x) => s + x.runs, 0) / first.length) : null,
+    batFirstWin: decided.length ? decided.filter((m) => m.winner === m.team1).length / decided.length : null,
+    tossBat: tossed.length ? tossed.filter((m) => m.toss_decision === 'bat').length / tossed.length : null,
+    tossWin: decided.length ? tossWon / decided.length : null,
+    draws: ms.filter((m) => m.result === 'draw').length,
+    rain: ms.filter((m) => m.rain).length / ms.length,
+    highest,
+  };
+}).filter(Boolean) as any[];
+const pc = (x: number | null) => (x === null ? '–' : `${Math.round(x * 100)}%`);
+---
+<Base title={v.name} description={`${v.name}${v.city && v.city !== v.name ? `, ${v.city}` : ''}: ${matches.length} matches. How it plays, the toss, batting first, and rain.`}>
+  <div class="d-page">
+    <ArchiveNav />
+    <header class="d-head">
+      <div class="crumbs"><a href="/grounds/">Grounds</a><span aria-hidden="true">/</span><a href={`/grounds/#${(v.country || 'unknown').toLowerCase().replace(/[^a-z]+/g, '-')}`}>{v.country}</a></div>
+      <h1>{v.name}</h1>
+      <p class="sub">{v.city && v.city !== v.name ? `${v.city} · ` : ''}{matches.length} matches in the archive</p>
+    </header>
+    <section class="panel">
+      <h2>How it plays</h2>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Format</th><th class="r">Matches</th><th class="r">Avg 1st-innings score</th><th class="r">Batting first won</th><th class="r">Toss winner won</th><th class="r">Chose to bat</th><th class="r">Draws</th><th class="r">Rain-hit</th><th class="r">Highest total</th></tr></thead>
+          <tbody>
+            {stats.map((s) => (
+              <tr><td>{s.fmt}</td><td class="r">{s.n}</td><td class="r">{s.firstAvg ?? '–'}</td><td class="r">{pc(s.batFirstWin)}</td><td class="r">{pc(s.tossWin)}</td>
+                <td class="r">{pc(s.tossBat)}</td><td class="r">{['Test', 'First-class'].includes(s.fmt) ? s.draws : '–'}</td><td class="r">{pc(s.rain)}</td>
+                <td class="r">{s.highest ? <a href={`/matches/${s.highest.id}/`}>{s.highest.runs}{s.highest.wkts < 10 ? `/${s.highest.wkts}` : ''}</a> : '–'}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Win percentages count matches with a result. First-innings averages leave out rain-affected and DLS matches.</p>
+    </section>
+    <section class="panel">
+      <h2>Latest matches</h2>
+      <ul class="list">{recent.map((m) => <MatchRow m={m} />)}</ul>
+    </section>
+  </div>
+  <DataCredit />
+</Base>

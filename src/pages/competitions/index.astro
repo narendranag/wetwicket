@@ -1,0 +1,49 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import ArchiveNav from '../../components/data/ArchiveNav.astro';
+import DataCredit from '../../components/DataCredit.astro';
+import { all, cacheFor } from '../../lib/db';
+import { seasonSlug } from '../../lib/cricket';
+import '../../styles/data.css';
+
+cacheFor(Astro.response);
+const rows = await all(
+  `SELECT competition_id AS id, MIN(event_name) AS name, team_type, gender, MIN(fmt) AS fmt,
+          COUNT(*) AS matches, COUNT(DISTINCT season) AS seasons, MAX(season) AS latest, MAX(date) AS last
+   FROM matches WHERE competition_id IS NOT NULL GROUP BY competition_id`);
+// "X tour of Y" and "... Series" are bilateral tours; everything else is a tournament or league.
+const bilateral = (r: any) => / tour of |series$/i.test(r.name);
+const byMatches = (a: any, b: any) => b.matches - a.matches;
+const groups = [
+  { title: 'International tournaments', rows: rows.filter((r) => r.team_type === 'international' && !bilateral(r)).sort(byMatches) },
+  { title: 'Leagues and domestic competitions', rows: rows.filter((r) => r.team_type === 'club').sort(byMatches) },
+  { title: 'Recent bilateral series', rows: rows.filter((r) => r.team_type === 'international' && bilateral(r)).sort((a, b) => (b.last > a.last ? 1 : -1)).slice(0, 60) },
+];
+---
+<Base title="Competitions" description="Every tournament, league and series in the Wet Wicket archive, season by season.">
+  <div class="d-page">
+    <ArchiveNav />
+    <header class="d-head">
+      <h1>Competitions</h1>
+      <p class="sub">{rows.length.toLocaleString('en')} tournaments, leagues and series, with standings and top performers for every season.</p>
+    </header>
+    {groups.map((g) => (
+      <section class="panel">
+        <h2>{g.title}</h2>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Competition</th><th></th><th class="r">Seasons</th><th class="r">Matches</th><th>Latest</th></tr></thead>
+            <tbody>
+              {g.rows.map((r) => (
+                <tr><td><a href={`/competitions/${r.id}/`}>{r.name}</a></td><td class="muted small">{r.gender === 'female' ? "Women's" : "Men's"} {r.fmt}</td>
+                  <td class="r">{r.seasons}</td><td class="r">{r.matches}</td><td><a href={`/competitions/${r.id}/${seasonSlug(r.latest)}/`}>{r.latest}</a></td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))}
+  </div>
+  <DataCredit />
+</Base>

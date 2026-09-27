@@ -18,3 +18,9 @@ data/reference/*.txt
 
 .DS_Store
 .wrangler/
+
+# Match database and D1 exports (rebuilt by pipeline/ingest.py and export_d1.py)
+data/wetwicket.sqlite
+data/changed_matches.txt
+data/d1/
+.dev.vars

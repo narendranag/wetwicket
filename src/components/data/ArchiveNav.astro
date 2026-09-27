@@ -1,0 +1,15 @@
+---
+const path = Astro.url.pathname;
+const LINKS = [['/matches/', 'Matches'], ['/players/', 'Players'], ['/competitions/', 'Competitions'], ['/grounds/', 'Grounds']];
+---
+<nav class="archive-nav" aria-label="Archive">
+  <span class="kicker">The Archive</span>
+  {LINKS.map(([href, label]) => <a href={href} aria-current={path.startsWith(href) ? 'page' : undefined}>{label}</a>)}
+</nav>
+<style>
+  .archive-nav { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .archive-nav a { font: 600 15px var(--body); color: var(--muted); text-decoration: none; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+  .archive-nav a:hover { color: var(--ink); }
+  .archive-nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
+  .kicker { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+</style>

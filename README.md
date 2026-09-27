@@ -25,15 +25,36 @@ Content lives in `src/content/`:
 Interactive pieces are Astro components in `src/components/apps/`, with their scripts in
 `public/assets/` and their data in `public/data/`.
 
-## The data pipeline
+## The Archive and the nightly update
+
+Match, player, competition and ground pages read from a Cloudflare D1 database built from
+Cricsheet's ball-by-ball JSON and the Cricsheet Register.
+
+```sh
+# Build the database locally and load it into a local D1 for `npm run dev`
+.venv/bin/python pipeline/ingest.py --register data/raw/register --matches data/raw/all_json
+.venv/bin/python pipeline/export_d1.py --full
+npm run db:local
+
+# What the nightly job does (see .github/workflows/nightly.yml)
+.venv/bin/python pipeline/update.py      # conditional downloads, ingest, D1 delta, explorer data
+npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql
+npm run deploy
+```
+
+The nightly workflow needs two repository secrets, `CLOUDFLARE_API_TOKEN` and
+`CLOUDFLARE_ACCOUNT_ID`. Until they are set, it still ingests but skips the Cloudflare steps.
+
+## The Rain Rules pipeline
 
 The Rain Rules series is built from [Cricsheet](https://cricsheet.org/)'s ball-by-ball archive.
 The pipeline is Python and writes the JSON files the site reads.
 
 ```sh
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-mkdir -p data/raw && curl -L -o data/raw/all_json.zip https://cricsheet.org/downloads/all_json.zip
+mkdir -p data/raw/register && curl -L -o data/raw/all_json.zip https://cricsheet.org/downloads/all_json.zip
 unzip -q data/raw/all_json.zip -d data/raw/all_json
+for f in people names; do curl -L -o data/raw/register/$f.csv https://cricsheet.org/register/$f.csv; done
 
 .venv/bin/python pipeline/flag_rain.py       # mark rain-affected matches
 .venv/bin/python pipeline/extract_overs.py   # over-by-over innings states
@@ -55,8 +76,9 @@ See `data/reference/SOURCES.md` for every source.
 
 ## Credits and licences
 
-Match data © Cricsheet, used under the
-[Open Data Commons Attribution License](https://opendatacommons.org/licenses/by/1-0/).
+Match data and the Cricsheet Register are © [Cricsheet](https://cricsheet.org/) (Stephen Rushe), used
+under the [Open Data Commons Attribution License 1.0](https://opendatacommons.org/licenses/by/1-0/).
+Everything Wet Wicket derives from them is offered under the same licence.
 Wet Wicket is independent and not affiliated with the ICC or the authors of the DLS method.
 
 Code is released under the MIT License.

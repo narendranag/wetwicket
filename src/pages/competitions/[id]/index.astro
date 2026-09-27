@@ -1,0 +1,45 @@
+---
+export const prerender = false;
+import Base from '../../../layouts/Base.astro';
+import ArchiveNav from '../../../components/data/ArchiveNav.astro';
+import DataCredit from '../../../components/DataCredit.astro';
+import { all, one, cacheFor } from '../../../lib/db';
+import { genderLabel, seasonSlug } from '../../../lib/cricket';
+import '../../../styles/data.css';
+
+const { id } = Astro.params;
+const comp = await one('SELECT * FROM competitions WHERE id = ?', id);
+if (!comp) return new Response(null, { status: 404, statusText: 'Competition not found' });
+cacheFor(Astro.response);
+const seasons = await all(
+  `SELECT season, COUNT(*) AS matches, MIN(date) AS first, MAX(date) AS last,
+          GROUP_CONCAT(DISTINCT team1) AS t1, GROUP_CONCAT(DISTINCT team2) AS t2,
+          MAX(CASE WHEN event_detail LIKE 'Final%' THEN winner END) AS champion,
+          SUM(rain != '') AS rain
+   FROM matches WHERE competition_id = ? GROUP BY season ORDER BY first DESC`, id);
+const teamCount = (s: any) => new Set([...(s.t1 ?? '').split(','), ...(s.t2 ?? '').split(',')]).size;
+---
+<Base title={comp.name} description={`${comp.name}: every season in the Wet Wicket archive, with results, standings and top performers.`}>
+  <div class="d-page">
+    <ArchiveNav />
+    <header class="d-head">
+      <div class="crumbs"><a href="/competitions/">Competitions</a><span aria-hidden="true">/</span><span>{genderLabel(comp.gender)} {comp.fmt}</span></div>
+      <h1>{comp.name}</h1>
+      <p class="sub">{seasons.length} season{seasons.length === 1 ? '' : 's'} · {seasons.reduce((s, x) => s + x.matches, 0)} matches</p>
+    </header>
+    <section class="panel">
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Season</th><th class="r">Teams</th><th class="r">Matches</th><th>Winner of the final</th><th class="r">Rain-hit</th></tr></thead>
+          <tbody>
+            {seasons.map((s) => (
+              <tr><td><a href={`/competitions/${id}/${seasonSlug(s.season)}/`}>{s.season}</a></td><td class="r">{teamCount(s)}</td>
+                <td class="r">{s.matches}</td><td>{s.champion ?? <span class="muted">–</span>}</td><td class="r">{s.rain}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+  <DataCredit />
+</Base>

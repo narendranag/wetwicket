@@ -1,0 +1,168 @@
+---
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+import DataCredit from '../../components/DataCredit.astro';
+import Worm from '../../components/data/Worm.astro';
+import Manhattan from '../../components/data/Manhattan.astro';
+import { all, one, cacheFor } from '../../lib/db';
+import { oversFrom, score, fmtDay, genderLabel, seasonSlug } from '../../lib/cricket';
+import '../../styles/data.css';
+
+const { id } = Astro.params;
+const m = await one('SELECT * FROM matches WHERE id = ?', id);
+if (!m) return new Response(null, { status: 404, statusText: 'Match not found' });
+cacheFor(Astro.response);
+
+const [innings, batting, bowling, venue, people] = await Promise.all([
+  all('SELECT * FROM innings WHERE match_id = ? ORDER BY inn', id),
+  all('SELECT * FROM batting WHERE match_id = ? ORDER BY inn, pos', id),
+  all('SELECT * FROM bowling WHERE match_id = ? ORDER BY inn, pos', id),
+  one('SELECT * FROM venues WHERE id = ?', m.venue_id),
+  all('SELECT mp.team, mp.player_id, mp.name FROM match_players mp WHERE mp.match_id = ?', id),
+]);
+const bpo = m.balls_per_over || 6;
+const limited = !['Test', 'First-class'].includes(m.fmt);
+const main = innings.filter((i) => !i.super_over);
+const COLORS: Record<string, string> = { [m.team1]: 'var(--r-se)', [m.team2]: 'var(--r-arr)' };
+const overs = (i: any) => JSON.parse(i.overs_json || '[]');
+const maxOvers = limited ? Math.max(m.overs || 20, ...main.map((i) => overs(i).length)) : 0;
+const manMax = Math.max(12, ...main.flatMap((i) => overs(i).map((o: number[]) => o[1])));
+const manTop = Math.ceil(manMax / 6) * 6;
+const pom: string[] = JSON.parse(m.player_of_match || '[]');
+const nameOf = Object.fromEntries(people.map((p) => [p.player_id, p.name]));
+const officials = JSON.parse(m.officials || '{}');
+const innLabel = (i: any) => {
+  if (i.super_over) return `${i.team} super over`;
+  const nth = main.filter((x) => x.team === i.team).indexOf(i);
+  return m.fmt === 'Test' || m.fmt === 'First-class' ? `${i.team} ${nth === 0 ? '1st' : '2nd'} innings` : `${i.team} innings`;
+};
+const title = `${m.team1} v ${m.team2}${m.event_detail ? `, ${m.event_detail}` : ''}`;
+const desc = `${m.outcome_text}. ${genderLabel(m.gender)} ${m.fmt}${m.event_name ? `, ${m.event_name}` : ''}, ${venue?.name ?? m.venue}, ${fmtDay(m.date)}.`;
+const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+const player = (pid: string | null, name: string) => (pid ? `<a href="/players/${esc(pid)}/">${esc(name)}</a>` : esc(name));
+---
+<Base title={title} description={desc}>
+  <div class="d-page">
+    <header class="d-head">
+      <div class="crumbs">
+        <a href="/matches/">Matches</a><span aria-hidden="true">/</span>
+        <span>{genderLabel(m.gender)} {m.fmt}</span>
+        {m.competition_id && (<><span aria-hidden="true">/</span><a href={`/competitions/${m.competition_id}/${seasonSlug(m.season)}/`}>{m.event_name} {m.season}</a></>)}
+      </div>
+      <h1>{m.team1} v {m.team2}</h1>
+      <p class="sub">
+        {m.event_detail && <>{m.event_detail} · </>}
+        <a href={`/grounds/${m.venue_id}/`}>{venue?.name ?? m.venue}</a>{m.city && m.city !== venue?.name ? `, ${m.city}` : ''} ·
+        {' '}{fmtDay(m.date)}{m.end_date !== m.date ? ` – ${fmtDay(m.end_date)}` : ''}
+      </p>
+      <p class="result">{m.outcome_text}{m.rain && <> <span class="pill rain" title={m.rain_reason}>Rain {m.rain === 'confirmed' ? 'affected' : 'likely'}</span></>}</p>
+    </header>
+
+    <div class="scoreline">
+      {main.map((i) => (
+        <div>
+          <span class="team">{innLabel(i)}</span>
+          <span class="runs">{score(i.runs, i.wkts, i.declared)}</span>
+          <span class="overs">{oversFrom(i.balls, bpo)} overs{i.target_runs && i.inn > 1 && limited ? ` · target ${i.target_runs}${i.target_overs && i.target_overs < (m.overs || 0) ? ` in ${i.target_overs} overs` : ''}` : ''}</span>
+        </div>
+      ))}
+    </div>
+
+    {limited && main.length > 0 && (
+      <section class="grid2">
+        <div class="panel">
+          <h2>The worm</h2>
+          <div class="legend">{main.map((i) => <span><i class="swatch" style={`background:${COLORS[i.team]}`}></i>{i.team}</span>)}</div>
+          <Worm series={main.map((i) => ({ team: i.team, color: COLORS[i.team], overs: overs(i) }))} maxOvers={maxOvers} />
+          <p class="note">Cumulative runs after each over. Dots mark overs in which wickets fell.</p>
+        </div>
+        <div class="panel">
+          <h2>Runs per over</h2>
+          {main.map((i) => (
+            <div>
+              <div class="legend"><span><i class="swatch" style={`background:${COLORS[i.team]}`}></i>{i.team}</span><span><i class="swatch" style="background:var(--neg);border-radius:50%"></i>wicket</span></div>
+              <Manhattan team={i.team} color={COLORS[i.team]} overs={overs(i)} maxOvers={maxOvers} yMax={manTop} />
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {innings.map((i) => {
+      const bat = batting.filter((b) => b.inn === i.inn);
+      const bowl = bowling.filter((b) => b.inn === i.inn);
+      const fow = JSON.parse(i.fow_json || '[]');
+      const parts = JSON.parse(i.partnerships_json || '[]');
+      const dnb = people.filter((p) => p.team === i.team && !bat.some((b) => b.player_id === p.player_id));
+      return (
+        <section class="panel" aria-label={innLabel(i)}>
+          <h2>{innLabel(i)} <span class="muted">{score(i.runs, i.wkts, i.declared)} ({oversFrom(i.balls, bpo)} ov)</span></h2>
+          <div class="tbl">
+            <table>
+              <thead><tr><th>Batter</th><th></th><th class="r">R</th><th class="r">B</th><th class="r">4s</th><th class="r">6s</th><th class="r">SR</th></tr></thead>
+              <tbody>
+                {bat.map((b) => (
+                  <tr>
+                    <td set:html={player(b.player_id, b.name)} />
+                    <td class="how">{b.how}</td>
+                    <td class="r"><b>{b.runs}</b></td><td class="r">{b.balls}</td><td class="r">{b.fours}</td><td class="r">{b.sixes}</td>
+                    <td class="r">{b.balls ? ((100 * b.runs) / b.balls).toFixed(1) : '–'}</td>
+                  </tr>
+                ))}
+                <tr><td>Extras</td><td class="how"></td><td class="r">{i.extras}</td><td colspan="4"></td></tr>
+                <tr class="total"><td>Total</td><td class="how">{i.wkts >= 10 ? 'all out' : `${i.wkts} wicket${i.wkts === 1 ? '' : 's'}${i.declared ? ' declared' : ''}`}, {oversFrom(i.balls, bpo)} {i.balls === bpo ? 'over' : 'overs'}</td><td class="r">{i.runs}</td><td colspan="4"></td></tr>
+              </tbody>
+            </table>
+          </div>
+          {dnb.length > 0 && <p class="note">Did not bat: <Fragment set:html={dnb.map((p) => player(p.player_id, p.name)).join(', ')} /></p>}
+          {fow.length > 0 && <p class="note">Fall of wickets: {fow.map((f: any[]) => `${f[1]}-${f[0]} (${f[4]}, ${f[2]} ov)`).join(', ')}</p>}
+          <div class="tbl">
+            <table>
+              <thead><tr><th>Bowler</th><th class="r">O</th><th class="r">M</th><th class="r">R</th><th class="r">W</th><th class="r">Econ</th><th class="r">Dots</th><th class="r">Wd</th><th class="r">Nb</th></tr></thead>
+              <tbody>
+                {bowl.map((b) => (
+                  <tr>
+                    <td set:html={player(b.player_id, b.name)} />
+                    <td class="r">{oversFrom(b.balls, bpo)}</td><td class="r">{b.maidens}</td><td class="r">{b.runs}</td><td class="r"><b>{b.wkts}</b></td>
+                    <td class="r">{b.balls ? ((b.runs * bpo) / b.balls).toFixed(2) : '–'}</td><td class="r">{b.dots}</td><td class="r">{b.wides}</td><td class="r">{b.noballs}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {parts.length > 1 && (
+            <details>
+              <summary>Partnerships</summary>
+              <div class="tbl">
+                <table>
+                  <thead><tr><th>Wicket</th><th class="r">Runs</th><th class="r">Balls</th><th>Batters</th></tr></thead>
+                  <tbody>
+                    {parts.map((p: any[]) => (
+                      <tr><td>{p[0] ? `${p[0]}` : 'Unbroken'}</td><td class="r"><b>{p[1]}</b></td><td class="r">{p[2]}</td>
+                        <td>{[p[3], p[5]].filter(Boolean).map((pid, k) => `${nameOf[pid] ?? pid} ${p[4 + 2 * k]}`).join(', ')}</td></tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          )}
+        </section>
+      );
+    })}
+
+    <section class="panel">
+      <h2>Match details</h2>
+      <dl class="facts">
+        {m.toss_winner && <div><dt>Toss</dt><dd>{m.toss_winner}, chose to {m.toss_decision}</dd></div>}
+        {pom.length > 0 && <div><dt>Player of the match</dt><dd set:html={pom.map((p) => player(p, nameOf[p] ?? p)).join(', ')} /></div>}
+        <div><dt>Ground</dt><dd><a href={`/grounds/${m.venue_id}/`}>{venue?.name ?? m.venue}</a>{m.country ? `, ${m.country}` : ''}</dd></div>
+        {m.season && <div><dt>Season</dt><dd>{m.season}</dd></div>}
+        {officials.umpires && <div><dt>Umpires</dt><dd>{officials.umpires.join(', ')}</dd></div>}
+        {officials.match_referees && <div><dt>Match referee</dt><dd>{officials.match_referees.join(', ')}</dd></div>}
+        {m.rain && <div><dt>Rain</dt><dd>{m.rain_reason}</dd></div>}
+        <div><dt>Source</dt><dd><a href="https://cricsheet.org/matches/">Cricsheet</a> match {m.id}</dd></div>
+      </dl>
+    </section>
+  </div>
+  <DataCredit />
+</Base>

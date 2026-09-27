@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "wetwicket",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-09-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "wetwicket",
+      // Replace with the id from `wrangler d1 create wetwicket` once the API token has D1 access.
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}

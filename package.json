@@ -10,9 +10,12 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy": "astro build && wrangler deploy",
+    "db:local": "wrangler d1 execute wetwicket --local --file data/d1/full.sql --yes"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.3.3",
     "@astrojs/markdown-satteri": "^0.4.2",
     "@astrojs/mdx": "^8.0.2",
     "@astrojs/rss": "^4.0.19",
@@ -21,5 +24,8 @@
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "wrangler": "^4.142.0"
   }
 }

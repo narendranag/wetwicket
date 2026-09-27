@@ -1,0 +1,110 @@
+---
+export const prerender = false;
+import Base from '../../../layouts/Base.astro';
+import ArchiveNav from '../../../components/data/ArchiveNav.astro';
+import MatchRow from '../../../components/data/MatchRow.astro';
+import DataCredit from '../../../components/DataCredit.astro';
+import { all, one, cacheFor } from '../../../lib/db';
+import { genderLabel, avg, rate, oversFrom, seasonFromSlug, type Summary } from '../../../lib/cricket';
+import '../../../styles/data.css';
+
+const { id } = Astro.params;
+const season = seasonFromSlug(Astro.params.season!);
+const comp = await one('SELECT * FROM competitions WHERE id = ?', id);
+if (!comp) return new Response(null, { status: 404, statusText: 'Competition not found' });
+const matches = await all('SELECT * FROM matches WHERE competition_id = ? AND season = ? ORDER BY date, id', id, season);
+if (!matches.length) return new Response(null, { status: 404, statusText: 'Season not found' });
+cacheFor(Astro.response);
+
+const NOT_SUPER = 'EXISTS (SELECT 1 FROM innings i WHERE i.match_id = x.match_id AND i.inn = x.inn AND i.super_over = 0)';
+const [runs, wkts] = await Promise.all([
+  all(`SELECT x.player_id, MIN(x.name) AS name, MIN(x.team) AS team, COUNT(*) AS inns, SUM(x.runs) AS runs, SUM(x.out) AS outs, SUM(x.balls) AS balls, MAX(x.runs) AS hs
+       FROM batting x JOIN matches m ON m.id = x.match_id WHERE m.competition_id = ? AND m.season = ? AND ${NOT_SUPER}
+       GROUP BY x.player_id ORDER BY runs DESC LIMIT 10`, id, season),
+  all(`SELECT x.player_id, MIN(x.name) AS name, MIN(x.team) AS team, SUM(x.balls) AS balls, SUM(x.runs) AS runs, SUM(x.wkts) AS wkts
+       FROM bowling x JOIN matches m ON m.id = x.match_id WHERE m.competition_id = ? AND m.season = ? AND ${NOT_SUPER}
+       GROUP BY x.player_id ORDER BY wkts DESC, runs ASC LIMIT 10`, id, season),
+]);
+
+// Standings for limited-overs competitions: group-stage matches only, with net run rate.
+// For NRR a side bowled out counts as having faced its full allocation of overs.
+const limited = !['Test', 'First-class'].includes(comp.fmt);
+const KNOCKOUT = /final|semi|qualifier|eliminator|play-?off|knockout|quarter/i;
+type Row = { team: string; p: number; w: number; l: number; t: number; nr: number; rf: number; bf: number; ra: number; bb: number };
+const table = new Map<string, Row>();
+const row = (t: string) => table.get(t) ?? (table.set(t, { team: t, p: 0, w: 0, l: 0, t: 0, nr: 0, rf: 0, bf: 0, ra: 0, bb: 0 }), table.get(t)!);
+for (const m of matches) {
+  if (KNOCKOUT.test(m.event_detail ?? '')) continue;
+  const inns: Summary[] = JSON.parse(m.summary || '[]').filter((s: Summary) => !s.super_over);
+  const [a, b] = [row(m.team1), row(m.team2)];
+  a.p++; b.p++;
+  if (m.winner) { (m.winner === m.team1 ? a : b).w++; (m.winner === m.team1 ? b : a).l++; }
+  else if (m.result === 'tie') { a.t++; b.t++; }
+  else { a.nr++; b.nr++; }
+  if (limited && m.winner && inns.length === 2 && !m.method) {
+    const quota = (m.overs || 20) * (m.balls_per_over || 6);
+    for (const [bat, bowl, s] of [[a, b, inns[0]], [b, a, inns[1]]] as [Row, Row, Summary][]) {
+      const balls = s.wkts >= 10 ? quota : s.balls;
+      bat.rf += s.runs; bat.bf += balls; bowl.ra += s.runs; bowl.bb += balls;
+    }
+  }
+}
+const nrr = (r: Row) => (r.bf && r.bb ? (r.rf / r.bf - r.ra / r.bb) * 6 : null);
+const standings = [...table.values()].sort((x, y) => y.w * 2 + y.t + y.nr - (x.w * 2 + x.t + x.nr) || (nrr(y) ?? 0) - (nrr(x) ?? 0));
+const showTable = standings.length > 2 && standings.some((r) => r.p > 1);
+const champion = matches.find((m) => /^final/i.test(m.event_detail ?? ''))?.winner;
+---
+<Base title={`${comp.name} ${season}`} description={`${comp.name} ${season}: ${matches.length} matches, results, standings and top performers.`}>
+  <div class="d-page">
+    <ArchiveNav />
+    <header class="d-head">
+      <div class="crumbs"><a href="/competitions/">Competitions</a><span aria-hidden="true">/</span><a href={`/competitions/${id}/`}>{comp.name}</a><span aria-hidden="true">/</span><span>{genderLabel(comp.gender)} {comp.fmt}</span></div>
+      <h1>{comp.name} {season}</h1>
+      <p class="sub">{matches.length} matches{champion && <> · won by <b>{champion}</b></>}</p>
+    </header>
+
+    {showTable && (
+        <section class="panel">
+          <h2>Standings</h2>
+          <div class="tbl">
+            <table>
+              <thead><tr><th>Team</th><th class="r">P</th><th class="r">W</th><th class="r">L</th><th class="r">T</th><th class="r">NR</th>{limited && <th class="r">NRR</th>}</tr></thead>
+              <tbody>
+                {standings.map((r) => (
+                  <tr><td>{r.team}</td><td class="r">{r.p}</td><td class="r"><b>{r.w}</b></td><td class="r">{r.l}</td><td class="r">{r.t}</td><td class="r">{r.nr}</td>
+                    {limited && <td class="r">{nrr(r) === null ? '–' : (nrr(r)! >= 0 ? '+' : '') + nrr(r)!.toFixed(3)}</td>}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="note">Group-stage matches only. Points systems differ between competitions, so teams are ranked on wins, then net run rate, which is worked out here from the scorecards.</p>
+        </section>
+    )}
+    <div class="grid2">
+      <section class="panel">
+        <h2>Most runs</h2>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Batter</th><th class="r">Inns</th><th class="r">Runs</th><th class="r">HS</th><th class="r">Avg</th><th class="r">SR</th></tr></thead>
+            <tbody>{runs.map((r) => <tr><td><a href={`/players/${r.player_id}/`}>{r.name}</a> <span class="muted small">{r.team}</span></td><td class="r">{r.inns}</td><td class="r"><b>{r.runs}</b></td><td class="r">{r.hs}</td><td class="r">{avg(r.runs, r.outs)}</td><td class="r">{rate(r.runs, r.balls, 100, 1)}</td></tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Most wickets</h2>
+        <div class="tbl">
+          <table>
+            <thead><tr><th>Bowler</th><th class="r">Overs</th><th class="r">Wkts</th><th class="r">Avg</th><th class="r">Econ</th></tr></thead>
+            <tbody>{wkts.map((r) => <tr><td><a href={`/players/${r.player_id}/`}>{r.name}</a> <span class="muted small">{r.team}</span></td><td class="r">{oversFrom(r.balls)}</td><td class="r"><b>{r.wkts}</b></td><td class="r">{avg(r.runs, r.wkts)}</td><td class="r">{rate(r.runs, r.balls, 6)}</td></tr>)}</tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Results</h2>
+      <ul class="list">{matches.map((m) => <MatchRow m={m} showFormat={false} />)}</ul>
+    </section>
+  </div>
+  <DataCredit />
+</Base>

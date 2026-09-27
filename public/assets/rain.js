@@ -131,7 +131,7 @@ function renderTable(list) {
     <td>${esc(m.country)}<span class="sub">${esc(m.venue)}</span></td>
     <td>${esc(m.outcome)}</td>
     <td><span class="pill ${m.conf}">${m.conf}</span><span class="sub">${esc(m.reason)}${m.stage ? ` · ${esc(m.stage)}` : ""}</span></td>
-    <td><a href="https://cricsheet.org/matches/${m.id}/" target="_blank" rel="noopener">Scorecard</a></td>
+    <td><a href="/matches/${m.id}/">Scorecard</a></td>
   </tr>`).join("") : `<tr><td colspan="7" class="empty">No rain-hit matches for these filters. Try a wider year range or more formats.</td></tr>`;
   const left = list.length - shown;
   $("more").hidden = left <= 0;

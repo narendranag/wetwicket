@@ -1,0 +1,27 @@
+---
+// Runs per over, one bar per over; overs with wickets are marked above the bar.
+interface Props { team: string; color: string; overs: number[][]; maxOvers: number; yMax: number }
+const { team, color, overs, maxOvers, yMax } = Astro.props;
+const W = 720, H = 170, L = 32, R = 8, T = 16, B = 26;
+const bw = (W - L - R) / maxOvers;
+const y = (r: number) => T + (1 - r / yMax) * (H - T - B);
+const yTicks = [0, Math.round(yMax / 2), yMax];
+const xStep = maxOvers <= 20 ? 5 : 10;
+---
+<div class="chart">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${team}: runs per over`}>
+    {yTicks.map((v) => (<><line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke="var(--grid)" /><text x={L - 6} y={y(v) + 4} text-anchor="end">{v}</text></>))}
+    {Array.from({ length: Math.floor(maxOvers / xStep) }, (_, i) => (i + 1) * xStep).map((v) => (
+      <text x={L + (v - 0.5) * bw} y={H - 8} text-anchor="middle">{v}</text>
+    ))}
+    {overs.map((o) => (
+      <g>
+        <title>{`Over ${o[0]}: ${o[1]} run${o[1] === 1 ? '' : 's'}${o[2] ? `, ${o[2]} wicket${o[2] > 1 ? 's' : ''}` : ''}`}</title>
+        <rect x={L + (o[0] - 1) * bw + 1} y={y(Math.min(o[1], yMax))} width={Math.max(1, bw - 2)} height={y(0) - y(Math.min(o[1], yMax))} fill={color} rx="1.5" />
+        {Array.from({ length: o[2] }, (_, k) => (
+          <circle cx={L + (o[0] - 0.5) * bw} cy={y(Math.min(o[1], yMax)) - 5 - k * 8} r="3" fill="var(--neg)" />
+        ))}
+      </g>
+    ))}
+  </svg>
+</div>
