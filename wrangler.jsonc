@@ -8,8 +8,7 @@
     {
       "binding": "DB",
       "database_name": "wetwicket",
-      // Replace with the id from `wrangler d1 create wetwicket` once the API token has D1 access.
-      "database_id": "00000000-0000-0000-0000-000000000000"
+      "database_id": "d168ffb9-089f-439b-8fa8-f8b3eeec1d5b"
     }
   ]
 }
