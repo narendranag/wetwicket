@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { seriesPieces } from '../../lib/sections';
+
+const all = (await getCollection('series')).sort((a, b) => b.data.started.valueOf() - a.data.started.valueOf());
+const counts = Object.fromEntries(await Promise.all(all.map(async (s) => [s.id, (await seriesPieces(s.id)).length])));
+---
+<Base title="Series: Deep dives" description="Long-running explorations of one corner of cricket, each mixing essays, data, match breakdowns, games and tools.">
+  <div class="page">
+    <header class="page-head">
+      <span class="kicker">Deep dives</span>
+      <h1>Series</h1>
+      <p>Each series follows one corner of the game for as long as it stays interesting, through essays, data, great matches, games and tools.</p>
+    </header>
+    <div class="cards">
+      {all.map((s) => (
+        <a class="card" href={`/series/${s.id}/`}>
+          <span class="meta">{counts[s.id]} {counts[s.id] === 1 ? 'piece' : 'pieces'} · {s.data.status}</span>
+          <h3>{s.data.title}</h3>
+          <p>{s.data.dek}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</Base>

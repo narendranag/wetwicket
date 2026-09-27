@@ -1,0 +1,159 @@
+---
+// Interactive piece: markup here, behaviour in public/assets/replay.js, data in public/data/.
+import '../../styles/replay.css';
+---
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Duckworth–Lewis · Cricsheet replay</div>
+    <h1>Who Wins When It Rains</h1>
+    <p class="lede">We took <span id="nmatch"></span> ODI and T20 chases that finished without rain and replayed each as if rain had ended play after every over. Six versions of the rain rules then declared a winner, from the run-rate sums of the 1980s to Duckworth–Lewis and its 2004 update. Comparing their verdicts with what really happened shows which rules tilt the game, and toward whom.</p>
+  </header>
+
+  <section aria-labelledby="h-find">
+    <h2 id="h-find">The short answer</h2>
+    <div class="findings" id="findings"></div>
+    <p class="caption">Measured at the midpoint of a real chase: after 30 of 50 overs, or 12 of 20. <b>On-par win rate</b> is how often a chaser sitting exactly on the rule's par score went on to win. A fair rule scores 50%.</p>
+  </section>
+
+  <section aria-labelledby="h-rules">
+    <h2 id="h-rules">How the rules work</h2>
+    <p>Every rule answers one question: if the chase stops now, how many runs should the chasing side have to be level? That number is the <b>par score</b>. Above it, they win. Below it, they lose.</p>
+    <div class="rules">
+      <div class="rulecard">
+        <div class="rule"><span class="swatch" style="background:var(--r-arr)"></span><h3>Average Run Rate</h3></div>
+        <div class="tag">Used until 1991</div>
+        <div class="formula">par = S × overs faced ÷ overs allotted</div>
+        <p>Scales Team 1's total by the share of overs Team 2 has faced. It ignores wickets completely, so a chaser who is 120 for 0 and one who is 120 for 8 get the same par.</p>
+      </div>
+      <div class="rulecard">
+        <div class="rule"><span class="swatch" style="background:var(--r-mpo)"></span><h3>Most Productive Overs</h3></div>
+        <div class="tag">1992 World Cup</div>
+        <div class="formula">par = Team 1's best k overs added up</div>
+        <p>If Team 2 has faced k overs, the par is the sum of Team 1's k highest-scoring overs. Team 1's maiden overs are simply discarded. This rule left South Africa facing an impossible target from one ball in the 1992 semi-final.</p>
+      </div>
+      <div class="rulecard">
+        <div class="rule"><span class="swatch" style="background:var(--r-se)"></span><h3>D/L Standard Edition</h3></div>
+        <div class="tag">1997 · table revised 2002 · official fallback today</div>
+        <div class="formula">par = S × R2 ÷ R1</div>
+        <p>Runs come from two resources: overs left and wickets in hand. A published table gives the share of resources remaining for every combination. R2 is what the chaser has used up. After 30 overs at 3 down, 49.1% remains, so the par is 50.9% of Team 1's total.</p>
+      </div>
+      <div class="rulecard">
+        <div class="rule"><span class="swatch" style="background:var(--r-pro)"></span><h3>D/L Professional Edition</h3></div>
+        <div class="tag">2004 · international cricket 2004–2014 · reconstructed</div>
+        <div class="formula">Z(u,w;λ) = Z₀·F(w)·λ<sup>n(w)+1</sup>·(1 − e<sup>−b·u/(F(w)·λ<sup>n(w)</sup>)</sup>)</div>
+        <p>A 2002-table par treats an early burst of runs as if it will continue, so big totals get pars that are too low. The 2004 fix adds λ, set from Team 1's total compared with an average total. A high total gives λ above 1, which spreads the expected runs more evenly through the innings. The ICC never published the parameters, so we use Chris Baker's 2011 reconstruction.</p>
+        <p>We run it two ways: <span class="key"><span class="swatch" style="background:var(--r-pro)"></span>against the ICC's fixed average</span> of 245 runs per 50 overs, and <span class="key"><span class="swatch" style="background:var(--r-proavg)"></span>against the real average</span> first-innings total for that year and format.</p>
+      </div>
+      <div class="rulecard">
+        <div class="rule"><span class="swatch" style="background:var(--r-refit)"></span><h3>D/L refit to modern data</h3></div>
+        <div class="tag">Our stand-in for today's DLS</div>
+        <div class="formula">Z(u,w) = Z₀·F(w)·(1 − e<sup>−b·u/F(w)</sup>)</div>
+        <p>The DLS method used in top-level cricket since 2014 runs only inside ICC software, and its parameters are not published. We refitted Duckworth and Lewis's own model to <span id="nfit"></span> first innings from 2015 onwards. That captures modern scoring patterns, but it is not the official DLS.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <span class="eyebrow">Show</span>
+    <div class="seg" id="fam" role="group" aria-label="Format">
+      <button type="button" data-v="50-over">ODIs & one-day</button><button type="button" data-v="T20">T20</button>
+    </div>
+  </div>
+
+  <section aria-labelledby="h-res">
+    <h2 id="h-res">What a resource table looks like</h2>
+    <p>The heart of D/L is the resource curve: how much batting is left for each number of overs remaining and wickets lost. The 2002 table (solid) and our modern refit (dashed) mostly agree. The refit says wickets matter more than they used to, especially in T20: with 6 down and 16 overs left, it gives a T20 chaser a third of their resources where the 2002 table gives half.</p>
+    <div class="figure">
+      <div class="head"><h3>Resources remaining</h3>
+        <div class="legend"><span><i class="solid"></i>2002 Standard Edition</span><span><i class="dash"></i>Modern refit</span></div>
+      </div>
+      <div class="chart" id="c-res"></div>
+      <p class="caption">Share of a full innings' run-scoring resources still available. Each pair of lines is one wickets-lost level. For T20, the 2002 table's values at 20 overs are rescaled to 100%.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-par">
+    <h2 id="h-par">Is the par score fair?</h2>
+    <p>Take every chase that was exactly level with a rule's par at the moment rain would have ended it. If the rule is fair, those chasers should have gone on to win half the time. Above 50%, the par was easy to reach, so a rule that calls it a tie is shortchanging the chaser. Below 50%, the par was too generous.</p>
+    <div class="figure">
+      <div class="head"><h3>On-par chasers who went on to win</h3>
+        <div class="legend" id="lg-par"></div>
+      </div>
+      <div class="chart" id="c-par"></div>
+      <details><summary>Show numbers</summary><div class="tbl" id="t-par"></div></details>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-flip">
+    <h2 id="h-flip">Results the rules would have changed</h2>
+    <p>Here the rule's verdict meets the real result. Every rule gets some matches wrong, because chases swing after the point where rain would have stopped them. The best possible column shows how often even a fitted win-probability model, using score, wickets and target, would have named the eventual winner. What separates the rules is the direction of their mistakes.</p>
+    <div class="two">
+      <div class="figure">
+        <h3>Net flips toward the chaser</h3>
+        <div class="chart" id="c-flip"></div>
+        <p class="caption">Wins handed to a chaser who went on to lose, minus wins taken from a chaser who went on to win, as a share of all chases. Midpoint of the chase.</p>
+      </div>
+      <div class="figure">
+        <h3>How often each rule named the real winner</h3>
+        <div class="tbl" id="t-agree"></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-se">
+    <h2 id="h-se">Where the 2002 table goes wrong, and what the 2004 fix does</h2>
+    <p>On average the 2002 table is close to fair. The average hides two tilts that cancel out. Against big totals the par is too low, so chasers are favoured, which is the problem the Professional Edition was built to fix in 2003–04. Against small totals the par is too high. In 50-over games, a chaser who has lost almost no wickets also gets too much credit for the batting still to come.</p>
+    <p>The Professional Edition, measured against the real average total, roughly halves the big-total tilt and shrinks the small-total one. It is the most accurate rule we tested. Measured against the ICC's fixed average of 245, the same correction treats most modern totals as high and raises every par, which works against chasers. That effect is strongest in T20, where 245 per 50 overs implies an average 20-over total of just 142.</p>
+    <div class="legend" id="lg-se"></div>
+    <div class="two">
+      <div class="figure">
+        <h3>By Team 1's total</h3>
+        <div class="chart" id="c-score"></div>
+      </div>
+      <div class="figure">
+        <h3>By wickets the chaser has lost</h3>
+        <div class="chart" id="c-wkts"></div>
+      </div>
+    </div>
+    <p class="caption">Runs each par would need to move for an on-par chaser to be a true 50/50. Bars to the right mean the par was too low and the chaser was favoured. Bars to the left mean the par was too high. All stopping points from 40% to 90% of the chase, pooled.</p>
+  </section>
+
+  <section aria-labelledby="h-ex">
+    <h2 id="h-ex">Five real ODIs, stopped after 30 overs</h2>
+    <p>Each of these finished without rain. The table shows the chasing side's score after 30 overs and the par each rule would have set had rain ended the match there. Red marks a verdict that disagrees with the real result.</p>
+    <div class="figure tbl" id="t-ex"></div>
+  </section>
+
+  <section aria-labelledby="h-meth">
+    <h2 id="h-meth">How the replay works</h2>
+    <div class="method">
+      <div>
+        <h3>The matches</h3>
+        <p><span id="nm50"></span> 50-over and <span id="nm20"></span> T20 matches from Cricsheet, men's and women's, 2001–2026. Each finished with a winner, had no sign of rain, and Team 1 batted its full overs or was bowled out. That makes <span id="nstates"></span> stopping points in total.</p>
+      </div>
+      <div>
+        <h3>The replay</h3>
+        <ol class="steps">
+          <li>Pick an over at which the chase was still alive (from 20 overs in ODIs, 5 in T20, the minimum for a result).</li>
+          <li>Pretend rain ends the match there. Each rule sets a par from Team 1's total and the chaser's overs and wickets.</li>
+          <li>The rule's winner is compared with the side that actually won.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Checks</h3>
+        <p>The Standard Edition code reproduces all six worked examples in the ICC's playing conditions exactly, including interruptions in both innings and the upward revision using G50. With λ = 1, the Professional Edition reconstruction matches the 2002 table to within 1.5 percentage points everywhere.</p>
+      </div>
+    </div>
+    <div class="caveats">
+      <h3>Limits</h3>
+      <p><b>Today's DLS is not tested directly.</b> Its formula is in ICC software only. The refit is our open approximation.</p>
+      <p><b>The Professional Edition is a reconstruction.</b> Its λ adjustment comes from Chris Baker's 2011 analysis, which inferred n(w) from two worked cases in Duckworth and Lewis's 2004 paper. It follows the published form, but the exact figures are estimates, and we could not check it against official revised targets because Cricsheet does not record when each interruption happened.</p>
+      <p><b>Only one kind of interruption.</b> The replay tests rain ending the match for good. We can't test a chase shortened before it starts, because teams pace a 30-over chase differently from the first 30 overs of a 50-over one.</p>
+      <p><b>The refit learned from first innings.</b> Chasers pace themselves to a target, so the modern curve is not a perfect fit for them. That may be why it tilts slightly toward 50-over chasers.</p>
+      <p><b>VJD is left out.</b> Jayadevan's method, used in Indian domestic cricket, depends on curves that are not published in a form we could reproduce.</p>
+    </div>
+  </section>
+</div>
+<div id="tip" hidden></div>
+
+<script is:inline src="/assets/replay.js"></script>

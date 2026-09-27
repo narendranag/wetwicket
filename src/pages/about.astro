@@ -1,0 +1,21 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+const authors = await getCollection('authors');
+---
+<Base title="About" description="What Wet Wicket is, who makes it, and where its numbers come from.">
+  <div class="page">
+    <header class="page-head">
+      <span class="kicker">About</span>
+      <h1>About Wet Wicket</h1>
+      <p>A loving exploration of cricket, by a cricket lover for cricket lovers.</p>
+    </header>
+    <div class="prose">
+      <p>Wet Wicket digs into the intricacies of the game: the maths behind rain rules, the moments that turned great matches, the laws and the lore. It mixes data explorations, match breakdowns, simple browser games, essays and tools, usually gathered into series that follow one idea as far as it goes.</p>
+      <h2>Where the numbers come from</h2>
+      <p>Match data comes from <a href="https://cricsheet.org/">Cricsheet</a>, which publishes ball-by-ball records of more than twenty thousand matches under the Open Data Commons Attribution License. Every data piece links to its method, and the code that produces the numbers is <a href="https://github.com/narendranag/wetwicket">open on GitHub</a>.</p>
+      <h2>Who writes it</h2>
+      {authors.map((a) => <p><b>{a.data.name}</b>. {a.data.bio}</p>)}
+    </div>
+  </div>
+</Base>

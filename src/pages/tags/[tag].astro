@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import PieceCard from '../../components/PieceCard.astro';
+import { allPieces } from '../../lib/sections';
+
+export async function getStaticPaths() {
+  const pieces = await allPieces();
+  const tags = [...new Set(pieces.flatMap((p) => p.data.tags))];
+  return tags.map((tag) => ({ params: { tag }, props: { tag, pieces: pieces.filter((p) => p.data.tags.includes(tag)) } }));
+}
+const { tag, pieces } = Astro.props;
+const label = tag.replace(/-/g, ' ');
+---
+<Base title={`Tagged: ${label}`} description={`Everything on Wet Wicket about ${label}.`}>
+  <div class="page">
+    <header class="page-head"><span class="kicker">Tag</span><h1>{label}</h1></header>
+    <div class="cards">{pieces.map((p) => <PieceCard piece={p} />)}</div>
+  </div>
+</Base>

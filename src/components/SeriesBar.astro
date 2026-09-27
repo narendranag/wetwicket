@@ -1,0 +1,25 @@
+---
+// Slim bar naming the series a piece belongs to, with every part in reading order.
+import { getEntry } from 'astro:content';
+import { seriesPieces, urlOf, type Piece } from '../lib/sections';
+
+interface Props { piece: Piece }
+const { piece } = Astro.props;
+const ref = piece.data.series;
+const series = ref ? await getEntry(ref) : undefined;
+const parts = series ? await seriesPieces(series.id) : [];
+---
+{series && (
+  <div class="series-bar">
+    <div class="inner">
+      <span class="kicker">Series · <a href={`/series/${series.id}/`}>{series.data.title}</a></span>
+      <ol>
+        {parts.map((p, i) => (
+          <li aria-current={p.id === piece.id ? 'true' : undefined}>
+            {p.id === piece.id ? `${i + 1}. ${p.data.title}` : <a href={urlOf(p)}>{i + 1}. {p.data.title}</a>}
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+)}

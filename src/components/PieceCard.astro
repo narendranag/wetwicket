@@ -1,0 +1,12 @@
+---
+import { sectionById, sectionOf, urlOf, fmtDate, type Piece } from '../lib/sections';
+
+interface Props { piece: Piece; showSection?: boolean }
+const { piece, showSection = true } = Astro.props;
+const s = sectionById(sectionOf(piece));
+---
+<a class="card" href={urlOf(piece)}>
+  <span class="meta">{showSection && `${s.name} · `}{fmtDate(piece.data.published)}</span>
+  <h3>{piece.data.title}</h3>
+  <p>{piece.data.dek}</p>
+</a>

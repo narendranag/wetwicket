@@ -1,0 +1,55 @@
+---
+// Interactive piece: markup here, behaviour in public/assets/rain.js, data in public/data/.
+import '../../styles/rain.css';
+---
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Cricsheet archive · <span id="updated"></span></div>
+    <h1>Rain Stopped Play</h1>
+    <p class="lede">Every match in the Cricsheet archive where weather cut the game short: results by the DLS or VJD method, chases revised to fewer overs, washouts, and Tests drawn after losing a large share of their overs.</p>
+  </header>
+
+  <section class="filters" aria-label="Filters">
+    <div class="field"><span>Format</span><div class="chips" id="fmt"></div></div>
+    <div class="field"><label for="country">Country</label><select id="country"></select></div>
+    <div class="field"><span>Years</span>
+      <div class="years"><select id="from" aria-label="From year"></select>–<select id="to" aria-label="To year"></select></div>
+    </div>
+    <div class="field"><span>Players</span><div class="chips" id="gender"></div></div>
+    <div class="field"><span>Evidence</span><div class="chips" id="conf"></div></div>
+    <div class="field"><label for="q">Team or event</label><input type="search" id="q" placeholder="e.g. England, IPL"></div>
+    <button class="reset" id="reset" type="button">Clear filters</button>
+  </section>
+
+  <section class="stats" id="stats" aria-live="polite"></section>
+
+  <section class="panels">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Rain-hit matches by year</h2>
+        <div class="legend"><span><i style="background:var(--accent)"></i>Confirmed</span><span><i style="background:var(--likely)"></i>Likely</span></div>
+      </div>
+      <div id="chart"></div>
+      <p class="hint">Select a bar to focus on that year. Select it again to show all years.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>By country</h2><span class="hint">matches · share of all played</span></div>
+      <div class="countries" id="clist"></div>
+    </div>
+  </section>
+
+  <section class="table-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Match</th><th>Format</th><th>Where</th><th>Result</th><th>Rain</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+  <button class="more" id="more" type="button" hidden></button>
+
+  <footer>
+    <p><b>Confirmed</b> means the result was decided by the DLS or VJD method, or the chasing side's target was set over fewer overs than scheduled. <b>Likely</b> means an abandoned "no result", or a Test or first-class match drawn with under 70% of its available overs bowled. Bad light and the occasional unfit pitch can produce the same signs as rain.</p>
+    <p>Country is where the match was played. England & Wales, Scotland and Ireland (all-island) follow cricket's boundaries. Data: <a href="https://cricsheet.org/" style="color:var(--accent)">cricsheet.org</a>, which withholds matches involving Afghanistan men.</p>
+  </footer>
+</div>
+
+<script is:inline src="/assets/rain.js"></script>

@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import PieceCard from '../../components/PieceCard.astro';
+import { SECTIONS, allPieces, sectionOf } from '../../lib/sections';
+
+export function getStaticPaths() {
+  return SECTIONS.map((section) => ({ params: { section: section.id }, props: { section } }));
+}
+const { section } = Astro.props;
+const pieces = (await allPieces()).filter((p) => sectionOf(p) === section.id);
+---
+<Base title={`${section.name}: ${section.plain}`} description={section.blurb}>
+  <div class="page">
+    <header class="page-head">
+      <span class="kicker">{section.plain}</span>
+      <h1>{section.name}</h1>
+      <p>{section.blurb}</p>
+    </header>
+    {pieces.length ? (
+      <div class="cards">{pieces.map((p) => <PieceCard piece={p} showSection={false} />)}</div>
+    ) : (
+      <p class="empty-note">Nothing here yet. The first {section.plain.toLowerCase()} are on their way.</p>
+    )}
+  </div>
+</Base>

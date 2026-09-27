@@ -1,0 +1,33 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SeriesBar from '../../components/SeriesBar.astro';
+import { allPieces, sectionById, sectionOf, slugOf, fmtDate } from '../../lib/sections';
+
+export async function getStaticPaths() {
+  return (await allPieces()).map((piece) => ({
+    params: { section: sectionOf(piece), slug: slugOf(piece) },
+    props: { piece },
+  }));
+}
+const { piece } = Astro.props;
+const { Content } = await render(piece);
+const section = sectionById(sectionOf(piece));
+const author = await getEntry(piece.data.author);
+---
+<Base title={piece.data.title} description={piece.data.dek}>
+  <SeriesBar piece={piece} />
+  {piece.data.presentation === 'app' ? (
+    <Content />
+  ) : (
+    <article class="page">
+      <header class="page-head">
+        <span class="kicker"><a href={`/${section.id}/`}>{section.name}</a> · {section.plain}</span>
+        <h1>{piece.data.title}</h1>
+        <p>{piece.data.dek}</p>
+        <span class="byline">By <b>{author?.data.name}</b> · {fmtDate(piece.data.published)}</span>
+      </header>
+      <div class="prose"><Content /></div>
+    </article>
+  )}
+</Base>

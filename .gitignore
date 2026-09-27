@@ -1,0 +1,20 @@
+# Node / Astro
+node_modules/
+dist/
+.astro/
+
+# Python
+.venv/
+__pycache__/
+
+# Pipeline data: raw downloads and large intermediates are rebuilt by the pipeline
+data/raw/
+data/*.pkl
+data/*.csv
+data/analysis.json
+data/analysis_summary.txt
+data/reference/*.pdf
+data/reference/*.txt
+
+.DS_Store
+.wrangler/

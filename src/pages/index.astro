@@ -1,0 +1,74 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PieceCard from '../components/PieceCard.astro';
+import { SECTIONS, allPieces, seriesPieces, sectionOf, urlOf, sectionById } from '../lib/sections';
+
+const series = (await getCollection('series')).sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || b.data.started.valueOf() - a.data.started.valueOf());
+const lead = series[0];
+const leadParts = lead ? await seriesPieces(lead.id) : [];
+const pieces = await allPieces();
+const latestBySection = SECTIONS.map((s) => ({ s, p: pieces.find((p) => sectionOf(p) === s.id) }));
+---
+<Base title="Wet Wicket" description="A loving exploration of cricket: data, great matches, games and essays, by a cricket lover for cricket lovers.">
+  <div class="page">
+    <header class="masthead">
+      <h1>Wet Wicket</h1>
+      <p>A loving exploration of cricket. Deep dives into the game's intricacies through data, great matches, games and essays, by a cricket lover for cricket lovers.</p>
+    </header>
+
+    {lead && (
+      <section class="lead" aria-labelledby="h-lead">
+        <div class="lead-copy">
+          <span class="kicker">Series{lead.data.featured ? ' · Now playing' : ''}</span>
+          <h2 id="h-lead"><a href={`/series/${lead.id}/`}>{lead.data.title}</a></h2>
+          <p>{lead.data.dek}</p>
+          <a class="lead-link" href={`/series/${lead.id}/`}>Read the series</a>
+        </div>
+        <ol class="lead-parts">
+          {leadParts.map((p, i) => (
+            <li><a href={urlOf(p)}><span class="no">{i + 1}</span><span><span class="kicker">{sectionById(sectionOf(p)).name}</span><b>{p.data.title}</b></span></a></li>
+          ))}
+        </ol>
+      </section>
+    )}
+
+    <section aria-labelledby="h-latest" class="stack">
+      <h2 class="h-sec" id="h-latest">Latest from the ground</h2>
+      <div class="cards">
+        {latestBySection.filter((x) => x.p).map(({ p }) => <PieceCard piece={p!} />)}
+      </div>
+    </section>
+
+    <section aria-labelledby="h-sections" class="stack">
+      <h2 class="h-sec" id="h-sections">Around the ground</h2>
+      <div class="cards">
+        {SECTIONS.map((s) => (
+          <a class="card" href={`/${s.id}/`}>
+            <span class="meta">{s.plain}</span>
+            <h3>{s.name}</h3>
+            <p>{s.blurb}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+</Base>
+<style>
+  .masthead { display: grid; gap: 10px; border-bottom: 3px solid var(--ink); padding-bottom: 22px; }
+  .masthead h1 { font: 700 clamp(56px, 12vw, 128px)/.85 var(--display); text-transform: uppercase; letter-spacing: .01em; margin: 0; }
+  .masthead p { margin: 0; max-width: 62ch; font-size: 19px; color: var(--muted); }
+  .lead { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 26px; }
+  @media (max-width: 760px) { .lead { grid-template-columns: 1fr; } }
+  .lead-copy { display: grid; gap: 10px; align-content: start; }
+  .lead h2 { font: 700 clamp(36px, 6vw, 56px)/.95 var(--display); text-transform: uppercase; margin: 0; }
+  .lead h2 a { color: var(--ink); text-decoration: none; }
+  .lead p { margin: 0; color: var(--muted); font-size: 17px; max-width: 52ch; }
+  .lead-link { font-weight: 600; }
+  .lead-parts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; align-content: start; }
+  .lead-parts a { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 4px; background: var(--bg); color: var(--ink); text-decoration: none; }
+  .lead-parts a:hover { outline: 1px solid var(--accent); }
+  .lead-parts .no { font: 700 28px/1 var(--display); color: var(--accent); }
+  .lead-parts b { display: block; font: 700 20px/1.05 var(--display); text-transform: uppercase; margin-top: 3px; }
+  .stack { display: grid; gap: 16px; }
+</style>
