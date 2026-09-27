@@ -22,6 +22,14 @@ const fullTitle = path === '/' ? title : `${title} · Wet Wicket`;
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <!-- Google tag (gtag.js) -->
+  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-H14P5LK5VK"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-H14P5LK5VK');
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{fullTitle}</title>
   <meta name="description" content={description}>
