@@ -13,7 +13,7 @@ const authors = await getCollection('authors');
     <div class="prose">
       <p>Wet Wicket digs into the intricacies of the game: the maths behind rain rules, the moments that turned great matches, the laws and the lore. It mixes data explorations, match breakdowns, simple browser games, essays and tools, usually gathered into series that follow one idea as far as it goes.</p>
       <h2>Where the numbers come from</h2>
-      <p>Match data comes from <a href="https://cricsheet.org/">Cricsheet</a>, which publishes ball-by-ball records of more than twenty thousand matches under the Open Data Commons Attribution License. Every data piece links to its method, and the code that produces the numbers is <a href="https://github.com/narendranag/wetwicket">open on GitHub</a>.</p>
+      <p>Match data comes from <a href="https://cricsheet.org/">Cricsheet</a>, Stephen Rushe's project publishing ball-by-ball records of more than twenty thousand matches under the Open Data Commons Attribution License. More in <a href="/data/">About the data</a>. The code that produces our numbers is <a href="https://github.com/narendranag/wetwicket">open on GitHub</a>.</p>
       <h2>Who writes it</h2>
       {authors.map((a) => <p><b>{a.data.name}</b>. {a.data.bio}</p>)}
     </div>

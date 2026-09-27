@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="About the data" description="Where Wet Wicket's cricket data comes from, how it is licensed, and how we process it.">
+  <div class="page">
+    <header class="page-head">
+      <span class="kicker">About</span>
+      <h1>About the data</h1>
+      <p>Nearly every number on Wet Wicket starts life in Cricsheet, one of the great gifts to people who love cricket.</p>
+    </header>
+    <div class="prose">
+      <h2>Cricsheet</h2>
+      <p><a href="https://cricsheet.org/">Cricsheet</a> is a collection of projects that provide freely available, structured data about cricket. Stephen Rushe started it in 2009 and still runs it. It publishes ball-by-ball records for Tests, one-day internationals, T20 internationals and dozens of domestic and franchise competitions, men's and women's. There are more than 22,000 matches in all, and new matches are added as they are played.</p>
+      <p>Cricsheet also maintains <a href="https://cricsheet.org/register/">the Cricsheet Register</a>, which gives every player and official a unique identifier and links it to the identifiers used for the same person on ESPNcricinfo, CricketArchive, the BCCI and other sites.</p>
+      <p>If you find Cricsheet useful, <a href="https://cricsheet.org/">visit the site</a> and tell Stephen. If you spot an error in the underlying data, Cricsheet is the place to report it.</p>
+
+      <h2>Licence</h2>
+      <p>Cricsheet's match data and register are made available under the <a href="https://opendatacommons.org/licenses/by/1-0/">Open Data Commons Attribution License 1.0</a>. Wet Wicket's datasets, charts and analyses are works produced from that data, and we attribute it on every page that uses it. If you reuse anything from Wet Wicket that is derived from Cricsheet, the same licence and attribution apply to you.</p>
+
+      <h2>What we do with it</h2>
+      <p>We download Cricsheet's JSON match files and register, load them into our own database, and derive everything else from there: rain flags, over-by-over states, rain-rule replays and the like. Where we add information that Cricsheet does not hold, such as the host country of a ground, we say so on the page. The code for all of this is <a href="https://github.com/narendranag/wetwicket">public on GitHub</a>.</p>
+      <p>We check Cricsheet for new matches once a day and download only files that have changed.</p>
+
+      <h2>What is not included</h2>
+      <p>Cricsheet currently withholds matches involving the Afghanistan men's team and the Afghanistan Premier League, as <a href="https://cricsheet.org/downloads/">explained on its downloads page</a>. Those matches do not appear on Wet Wicket either.</p>
+    </div>
+  </div>
+</Base>

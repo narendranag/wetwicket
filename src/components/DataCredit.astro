@@ -1,0 +1,18 @@
+---
+// Attribution required by the ODC Attribution License for any public work built from Cricsheet data.
+interface Props { note?: string }
+const { note } = Astro.props;
+---
+<aside class="data-credit" aria-label="Data credit">
+  <p>
+    <b>Data:</b> ball-by-ball match data from <a href="https://cricsheet.org/">Cricsheet</a>, created and maintained by
+    Stephen Rushe, used under the <a href="https://opendatacommons.org/licenses/by/1-0/">Open Data Commons Attribution License 1.0</a>.
+    Wet Wicket has processed and analysed it; any errors in that are ours. {note}
+    <a href="/data/">About the data</a>.
+  </p>
+</aside>
+<style>
+  .data-credit { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 0 28px; }
+  .data-credit p { margin: 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font-size: 14px; color: var(--muted); max-width: 100ch; }
+  .data-credit b { color: var(--ink); }
+</style>
