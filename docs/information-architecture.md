@@ -1,6 +1,6 @@
 # Wet Wicket: information architecture
 
-A loving exploration of cricket, by a cricket lover for cricket lovers: data explorations,
+A loving exploration of cricket, by cricket lovers, for cricket lovers: data explorations,
 breakdowns of epic matches, browser games, essays and tools.
 
 ## Principles

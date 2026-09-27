@@ -1,6 +1,6 @@
 # Wet Wicket
 
-A loving exploration of cricket, by a cricket lover for cricket lovers: data explorations,
+A loving exploration of cricket, by cricket lovers, for cricket lovers: data explorations,
 breakdowns of epic matches, browser games, essays and tools. Built with [Astro](https://astro.build)
 and deployed as a static site on Cloudflare Pages.
 

@@ -10,11 +10,11 @@ const leadParts = lead ? await seriesPieces(lead.id) : [];
 const pieces = await allPieces();
 const latestBySection = SECTIONS.map((s) => ({ s, p: pieces.find((p) => sectionOf(p) === s.id) }));
 ---
-<Base title="Wet Wicket" description="A loving exploration of cricket: data, great matches, games and essays, by a cricket lover for cricket lovers.">
+<Base title="Wet Wicket" description="A loving exploration of cricket: data, great matches, games and essays, by cricket lovers, for cricket lovers.">
   <div class="page">
     <header class="masthead">
       <h1>Wet Wicket</h1>
-      <p>A loving exploration of cricket. Deep dives into the game's intricacies through data, great matches, games and essays, by a cricket lover for cricket lovers.</p>
+      <p>A loving exploration of cricket. Deep dives into the game's intricacies through data, great matches, games and essays, by cricket lovers, for cricket lovers.</p>
     </header>
 
     {lead && (

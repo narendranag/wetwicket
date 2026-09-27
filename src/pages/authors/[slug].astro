@@ -15,7 +15,7 @@ const { author, pieces } = Astro.props;
 ---
 <Base title={author.data.name} description={author.data.bio}>
   <div class="page">
-    <header class="page-head"><span class="kicker">Author</span><h1>{author.data.name}</h1><p>{author.data.bio}</p></header>
-    <div class="cards">{pieces.map((p) => <PieceCard piece={p} />)}</div>
+    <header class="page-head"><span class="kicker">{author.data.role ?? 'Author'}</span><h1>{author.data.name}</h1><p>{author.data.bio}</p></header>
+    {pieces.length ? <div class="cards">{pieces.map((p) => <PieceCard piece={p} />)}</div> : <p class="empty-note">First pieces coming soon.</p>}
   </div>
 </Base>

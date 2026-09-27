@@ -5,7 +5,7 @@ export async function GET(context) {
   const pieces = await allPieces();
   return rss({
     title: 'Wet Wicket',
-    description: 'A loving exploration of cricket, by a cricket lover for cricket lovers.',
+    description: 'A loving exploration of cricket, by cricket lovers, for cricket lovers.',
     site: context.site,
     items: pieces.map((p) => ({ title: p.data.title, description: p.data.dek, pubDate: p.data.published, link: urlOf(p) })),
   });
