@@ -4,6 +4,13 @@
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_date": "2026-09-27",
   "compatibility_flags": ["nodejs_compat"],
+  // Served only at wetwicket.com; www redirects to it through a zone redirect rule.
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "wetwicket.com", "custom_domain": true },
+    { "pattern": "www.wetwicket.com", "custom_domain": true }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
