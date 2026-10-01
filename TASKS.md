@@ -34,9 +34,14 @@ Last updated: 2026-10-01
 
 - [ ] **Watch the first real nightly run with new matches.** Check D1 counts, the
       `latest_match` meta value, that the redeploy succeeded, and the `rain.json` commit.
-- [ ] **Confirm the bumped GitHub Actions run cleanly.** checkout v7, setup-node v7,
-      setup-python v7 and cache v6 were pushed on 2026-10-01 but have not run yet: the deploy
-      workflow ignores `.github/` changes. The next nightly run and the next deploy will show it.
+- [ ] **Confirm the nightly workflow runs cleanly on the bumped Actions** (checkout v7,
+      setup-node v7, setup-python v7, cache v6; pushed 2026-10-01). The deploy workflow already
+      has, with no Node 20 warnings. The nightly's Python and cache steps first run on
+      2026-10-02 at 00:30 UTC.
+- [ ] **Fact-check the unsourced details in the two prose pieces**, published 2026-10-01 as
+      written. *Someone, Somewhere*: Duckworth's nuclear-industry career, the 2010 MBEs,
+      McMillan and Richardson at the crease and the last-ball single, Pringle bowling England's
+      two cheapest overs. *The Wrong Number*: the 1992 and 1999 references.
 - [ ] **Check Search Console in a week or so** (Indexing > Pages): how many Archive pages Google
       has picked up, and any crawl errors.
 - [ ] **Show Avirook his bio** (`src/content/authors/avirook-sen.md`) and get his approval.
@@ -47,7 +52,9 @@ Last updated: 2026-10-01
 
 - [ ] Classics: more rain-affected matches, using the components in `src/components/classics/`
       and `pipeline/build_pieces.py <match id>`. Candidates in Cricsheet: the 2015 World Cup
-      semi-final (656491), the 2007 World Cup final (247507).
+      semi-final (656491), the 2007 World Cup final (247507). The 1992 semi-final is not in
+      Cricsheet (its ODIs start in 2002).
+- [ ] Request indexing in Search Console for the four new pieces if they are slow to appear.
 - [ ] *Beat the Par*: a daily over that is the same for everyone; penalty runs and minimum-overs
       rules in the calculator.
 - [ ] Link rain-hit matches and replay examples to Archive match pages. Done for the scorecard
@@ -63,6 +70,8 @@ Last updated: 2026-10-01
 - [ ] Ground pages: rain history by month; average scores over time.
 - [ ] Team pages (`/teams/<slug>/`): results, head-to-heads.
 - [ ] Search across matches, players and grounds from the nav.
+- [ ] Seed the local D1 (`npm run db:local`) so Archive pages and the Archive sitemaps can be
+      tested in dev; it is currently empty on this machine.
 - [ ] Edge caching for D1 pages (Cache API in middleware). Pages set Cache-Control, but Workers
       responses aren't cached at the CDN by default.
 - [ ] Glossary (`/glossary/`), which the IA describes but doesn't yet exist.
@@ -74,5 +83,6 @@ Last updated: 2026-10-01
 - **Stack:** Astro on Cloudflare Workers, with D1. R2 is not needed yet.
 - **Nightly:** GitHub Actions cron, covering everything Cricsheet has.
 - **Voice:** masthead plus signed first-person pieces.
+- **Prose pieces** are drafted by Claude in Narendra's first person and published on his say-so.
 - **Rain Rules:** the D/L Standard Edition is exact (all six ICC examples pass). The Professional
   Edition is a labelled reconstruction.

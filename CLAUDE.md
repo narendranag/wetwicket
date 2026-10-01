@@ -25,6 +25,14 @@ before adding content or pages.
 - **Deploy:** `.github/workflows/deploy.yml` runs on push to main.
 - **Rain Rules analysis:** `pipeline/rain_rules.py`, `simulate.py`, `analyze.py` and
   `build_site.py` produce `public/data/replay.json`. It is rebuilt by hand, not nightly.
+- **Piece data:** `pipeline/build_pieces.py [match id …]` writes the D/L table
+  (`public/data/dl-se.json`), the Beat the Par chases (`public/data/par-game.json`) and one
+  `src/data/classics/<id>.json` per match id. Rebuilt by hand.
+- **D/L in the browser:** `public/assets/dl.js` is a port of the Standard Edition functions in
+  `rain_rules.py`. Keep the two in step.
+- **Search:** `@astrojs/sitemap` covers prerendered pages. `src/pages/archive-[kind].xml.ts`
+  serves the Archive's sitemaps from D1, and `astro.config.mjs` lists them in `sitemap-index.xml`.
+  wetwicket.com is a verified Domain property in Google Search Console.
 
 ## Layout
 
@@ -33,6 +41,8 @@ src/content/{pieces/<section>/<slug>.mdx, series/, authors/}   editorial content
 src/pages/[section]/…, series/, tags/, authors/                 editorial routes
 src/pages/{matches,players,competitions,grounds}/               the Archive (D1, on-demand)
 src/components/apps/                                            interactive pieces (JS in public/assets/)
+src/components/classics/                                        Classics pieces: MatchStrip, ParChase, ParSheet, Moments
+src/data/classics/<match id>.json                               match data for a Classics piece (build_pieces.py)
 src/components/data/                                            Archive components (Worm, Manhattan, MatchRow…)
 src/lib/{sections,db,cricket,career}.ts                         helpers
 pipeline/                                                       Python: ingest, update, export, rain-rule analysis
@@ -50,6 +60,8 @@ npm run build
 .venv/bin/python pipeline/export_d1.py --full && npm run db:local
 .venv/bin/python pipeline/update.py              # what the nightly job does
 .venv/bin/python pipeline/test_rain_rules.py     # ICC worked examples; must pass
+node scripts/test-dl.mjs                         # the same examples against public/assets/dl.js
+.venv/bin/python pipeline/build_pieces.py 65272  # data for the calculator, the game and a classic
 
 # Cloudflare (always use the site token)
 set -a; source ~/.config/secrets.env; set +a; export CLOUDFLARE_API_TOKEN="$WETWICKET_CLOUDFLARE_API_TOKEN"
@@ -86,4 +98,14 @@ npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
   containing `[...]`.
 - **The Professional Edition** in the replay analysis is Chris Baker's 2011 reconstruction, not
   the official ICC version. Say so wherever it's shown. The current DLS is not public.
+- **Deploy triggers:** `deploy.yml` only runs for changes under `src/`, `public/` and a few config
+  files. A push that touches only `.github/`, `pipeline/` or docs deploys nothing.
+- **Local D1** starts empty. Archive pages and the Archive sitemaps return 500 in `npm run dev`
+  until it is seeded (see Commands).
+- **Dev server:** `astro dev` runs in the background (`npx astro dev stop | status | logs`). After
+  a change to `astro.config.mjs` it can fail to restart; stop it, delete `node_modules/.vite`, and
+  start it again.
+- **Drafts:** `draft: true` pieces show in dev and are left out of production builds.
+- **DNS:** the apex TXT record `google-site-verification=…` keeps the Search Console property
+  verified. Don't remove it.
 - **Be polite to Cricsheet:** conditional requests, an identifying User-Agent, and no bulk HEAD scans.

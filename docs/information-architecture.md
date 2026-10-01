@@ -43,6 +43,7 @@ Supporting pages: `/` (front page), `/tags/<tag>/`, `/authors/<author>/`, `/glos
 /scorebook/rain-hit-matches/              Piece (series: rain-rules, part 1)
 /classics/<year>-<short-name>/            e.g. /classics/2005-edgbaston/
 /nets/<game>/                             e.g. /nets/beat-the-par/
+/archive-<matches|players|places>.xml     Archive sitemaps, listed in /sitemap-index.xml
 /long-room/<slug>/
 /tags/<tag>/  /authors/<slug>/  /glossary/#<term>
 
@@ -80,6 +81,12 @@ an intro in the body, and a `featured` flag for the front page.
 
 **Author** (`src/content/authors/<slug>.md`): name, short bio.
 
+**Classics piece.** An `article` piece built from four components in `src/components/classics/`:
+`MatchStrip` (scoreline and scorecard link), `ParChase` (the chase against the D/L par),
+`ParSheet` (the par for each number of wickets down) and `Moments` (key moments, or any
+timeline). Its match data is `src/data/classics/<match id>.json`, written by
+`pipeline/build_pieces.py <match id>`, and the piece lists the id in `matches`.
+
 ## Front page
 
 1. Lead series: its hub card, plus its latest piece.
@@ -90,5 +97,8 @@ an intro in the body, and a `featured` flag for the front page.
 
 1. *Rain Stopped Play* (Scorebook). Every rain-hit match in the Cricsheet archive.
 2. *Who Wins When It Rains* (The Numbers). Rain-free chases replayed under six rain rules.
-3. Next: an essay on how D/L came to be (The Long Room), *Beat the par* (The Nets),
-   a DLS Standard Edition calculator (Scorebook), and classic rain-affected matches (Classics).
+3. *Someone, Somewhere* (The Long Room). How Duckworth–Lewis came to be.
+4. *The D/L Calculator* (Scorebook). Revised targets and par sheets with the Standard Edition.
+5. *Beat the Par* (The Nets). Guess the D/L par score for six real chases.
+6. *The Wrong Number* (Classics). Durban 2003, and the misread par sheet.
+7. Next: more classic rain-affected matches.
