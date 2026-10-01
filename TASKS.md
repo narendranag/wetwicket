@@ -19,6 +19,10 @@ Last updated: 2026-10-01
   classic *The Wrong Number* (`/classics/2003-durban/`). Data from `pipeline/build_pieces.py`.
 - **Supporting pages:** `/data/` (Cricsheet credit and licence), `/about/`, author pages for
   Narendra Nag and Avirook Sen, RSS and sitemap.
+- **Search:** wetwicket.com is a verified Domain property in Google Search Console (DNS TXT
+  record in Cloudflare; don't remove it). `sitemap-index.xml` is submitted and lists the editorial
+  sitemap plus three D1-backed Archive sitemaps (`src/pages/archive-[kind].xml.ts`), about 40,600
+  URLs. `public/robots.txt` points to it.
 - **Nightly job** at 00:30 UTC, with secrets set. Verified: a cold-cache rebuild with a D1 update,
   and a warm-cache no-op. The "new matches arrive" path (D1 delta, deploy, commit of rain.json)
   has not yet run for real. Check the first run after Cricsheet next publishes.
@@ -31,6 +35,8 @@ Last updated: 2026-10-01
 - [ ] **Confirm the bumped GitHub Actions run cleanly.** checkout v7, setup-node v7,
       setup-python v7 and cache v6 were pushed on 2026-10-01 but have not run yet: the deploy
       workflow ignores `.github/` changes. The next nightly run and the next deploy will show it.
+- [ ] **Check Search Console in a week or so** (Indexing > Pages): how many Archive pages Google
+      has picked up, and any crawl errors.
 - [ ] **Show Avirook his bio** (`src/content/authors/avirook-sen.md`) and get his approval.
 - [ ] **Decide on domain auto-renew.** It is OFF, and wetwicket.com expires on 2027-09-27. The
       user decides: it's a recurring charge.
