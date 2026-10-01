@@ -14,7 +14,9 @@ Last updated: 2026-10-01
   and real average) and a modern refit. Rebuilt by hand.
 - **The Archive:** `/matches/`, `/players/`, `/competitions/` and `/grounds/`, covering all
   22,983 Cricsheet matches and 18,554 Register people, served from D1.
-- **Rain Rules parts 3 to 5** (published 2026-10-01): the D/L calculator
+- **Rain Rules part 3** (published 2026-10-01): the Long Room essay *Someone, Somewhere*
+  (`/long-room/how-duckworth-lewis-came-to-be/`).
+- **Rain Rules parts 4 to 6** (published 2026-10-01): the D/L calculator
   (`/scorebook/dl-calculator/`), *Beat the Par* (`/nets/beat-the-par/`) and the Durban 2003
   classic *The Wrong Number* (`/classics/2003-durban/`). Data from `pipeline/build_pieces.py`.
 - **Supporting pages:** `/data/` (Cricsheet credit and licence), `/about/`, author pages for
@@ -43,8 +45,6 @@ Last updated: 2026-10-01
 
 ## Backlog: Rain Rules series
 
-- [ ] Essay in The Long Room on how D/L came to be (ARR, then the 1992 MPO semi-final, then D/L,
-      then DLS).
 - [ ] Classics: more rain-affected matches, using the components in `src/components/classics/`
       and `pipeline/build_pieces.py <match id>`. Candidates in Cricsheet: the 2015 World Cup
       semi-final (656491), the 2007 World Cup final (247507).

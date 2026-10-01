@@ -1,0 +1,90 @@
+---
+title: Someone, Somewhere
+dek: "How a farce in Sydney, a remark on the radio and two English statisticians gave cricket a rain rule it could live with."
+author: narendra
+published: 2026-10-01
+series: rain-rules
+seriesOrder: 3
+tags: [rain-rules, duckworth-lewis, history, world-cup]
+---
+import DataCredit from '../../../components/DataCredit.astro';
+import Moments from '../../../components/classics/Moments.astro';
+
+On 22 March 1992, at the Sydney Cricket Ground, South Africa needed 22 runs from 13 balls to reach a World Cup final. It was their first World Cup. Brian McMillan and Dave Richardson were at the crease, England were rattled, and it was the kind of finish one-day cricket was invented for.
+
+Then it rained for twelve minutes.
+
+When the players came back, two overs had been taken off the chase. The rule of the day took almost nothing off the target. The scoreboard told the crowd that South Africa now needed 22 runs from one ball. The correct figure was 21, which made no difference. McMillan pushed a single and walked off, and England were in the final.
+
+Nobody had cheated, and the umpires had done exactly what the playing conditions told them to do. That was the problem. This is the story of how cricket got from that evening to a method that mostly works, and of why it took a statistician to do it.
+
+## The first answer: run rate
+
+One-day cricket has needed a rain rule for as long as it has existed, because a limited-overs match cannot be drawn. The first rule was the obvious one. Work out how fast the side batting first scored, and ask the chasing side to score faster over however many overs they get. A team that made 250 in 50 overs scored at five an over, so a chase cut to 25 overs needs 126.
+
+The flaw is easy to see once you have watched a few run chases. Scoring 126 in 25 overs is far easier than scoring 251 in 50, because the chasing side still has all ten wickets and only half as long to protect them. They can bat as if the innings were already in its second half. Average run rate treats overs as the only thing a batting side spends, and so it handed a large advantage to whoever batted second when rain was about.
+
+Captains knew it, and a bad forecast became a reason to bowl first.
+
+## The second answer: best overs
+
+For the 1992 World Cup, the organisers tried to fix that. Under the new rule, if the chasing side lost overs, the target was reduced by the runs the first side had scored in its *least* productive overs. Lose two overs, and you subtract the other side's two worst.
+
+The idea was to stop penalising the side that batted first. It overcorrected, badly. A side that had bowled two maidens found that losing two overs knocked nothing off its target at all. In Sydney, England's two cheapest overs, both bowled by Meyrick Pringle, had cost one run between them. South Africa had bowled well, and the rule punished them for it: twelve balls disappeared and one run came off the target.
+
+Here is what each of the three rules in this story would have asked of South Africa from that final ball. They had 231.
+
+- **Average run rate:** 241 to win. Ten from one ball.
+- **Most productive overs,** the rule in force: 252 to win. Twenty-one from one ball.
+- **Duckworth–Lewis,** on the 2002 table we use across this series: 235 to win. Four from one ball.
+
+A boundary to win a semi-final. It would have been a finish.
+
+## A remark on the radio
+
+Frank Duckworth was a statistician who had spent his career in the nuclear power industry. He was listening to the semi-final on the radio, and later recalled hearing the commentator Christopher Martin-Jenkins say that "surely someone, somewhere could come up with something better". Duckworth decided this was a mathematical problem and that it wanted a mathematical solution.
+
+Later that year he presented a short paper to the Royal Statistical Society's conference in Sheffield. It was called "A fair result in foul weather". Tony Lewis, who lectured in mathematics at the University of the West of England, picked up the idea and proposed testing it against real scorecards. The two of them worked on it together for the next several years, and the method has carried both their names since.
+
+## The idea: two resources, not one
+
+What Duckworth saw is simple to say. A batting side has two things to spend: the overs it has left, and the wickets it has left. Runs come from the combination. Ten wickets are not much use with one over to go, and thirty overs are not much use with nine wickets down.
+
+So the method is built on a table that says, for any number of overs left and wickets lost, what share of a full innings' run-scoring is still to come. A side with all 50 overs and all ten wickets has 100%. The numbers in the table come from fitting curves to the scorecards of real one-day matches.
+
+Some of what the table says is surprising. With 25 overs left and no wickets down, a side still has 66.5% of its resources. The first half of an innings, in other words, is worth only a third of the runs. That is why run rate was unfair: a chase cut to 25 overs is not half an innings. With 20 overs left, a side that has lost two wickets has 52.4% left. Five down, it has 38.6%. Eight down, 11.9%.
+
+Once you have the table, the rule follows. Add up the resources each side had available. If the chasing side had less, scale the target down in proportion. If rain ends the match, compare what the chasing side has scored with the share of its resources it has used. Stoppages cost whatever the table says they cost at the moment they happen, so losing two overs at the death with six wickets down is a small loss, which is exactly what happened in Sydney, and losing ten overs at the start is a large one.
+
+## Into the game
+
+<Moments moments={[
+  { when: 'Sydney', score: '1992', title: 'The semi-final', text: 'Twelve minutes of rain turn 22 from 13 balls into 21 from one. Duckworth presents his paper later that year.' },
+  { when: 'Harare', score: '1997', title: 'First use', text: 'Zimbabwe v England, on New Year’s Day. Zimbabwe win by seven runs under the new method.' },
+  { when: 'ICC', score: '1999', title: 'Adopted', text: 'The International Cricket Council makes Duckworth–Lewis the standard for rain-hit one-day matches.' },
+  { when: 'Durban', score: '2003', title: 'The misread sheet', text: 'South Africa tie a match they think they have won, and go out of their own World Cup.' },
+  { when: 'Software', score: '2004', title: 'The Professional Edition', text: 'A computer version corrects the method for very large first-innings totals. The printed table stays on as the Standard Edition.' },
+  { when: 'Stern', score: '2014', title: 'DLS', text: 'Duckworth and Lewis retire. The Australian statistician Steven Stern takes over, and the method becomes Duckworth–Lewis–Stern.' },
+]} />
+
+The method was first used in an international on 1 January 1997, in Harare, and the ICC adopted it in 1999. It has been revised since. The table was updated in 2002 as scoring rates rose. A bigger change came in 2004, because the original method assumed every innings followed the same shape, and that breaks down when the side batting first makes a very large total. The fix needed a computer, so the method split in two: a Professional Edition, run by software, for the top level, and the printed Standard Edition for everyone else.
+
+Duckworth and Lewis were both appointed MBE in 2010. When they retired, Steven Stern became the method's custodian, and since 2014 it has been the Duckworth–Lewis–Stern method. Tony Lewis died in 2020, aged 78. Frank Duckworth died in 2024, aged 84.
+
+## Does it work?
+
+It is fair to ask, and elsewhere in this series [I tried to answer it](/numbers/who-wins-when-it-rains/). I took 3,798 fifty-over chases that finished without rain, stopped each one where rain might have ended it, and asked each rule to name a winner. Then I compared the verdicts with what happened.
+
+At the 30-over mark, average run rate named the eventual winner 79% of the time and most productive overs 54%, which is barely better than a coin. The 2002 Duckworth–Lewis table managed 83%, against a ceiling of about 85% for any rule, since matches do turn after the 30th over. A fairer test is to take chasers who were exactly level with the par score and see how often they went on to win. For a fair rule that should be half. For Duckworth–Lewis it was 49%.
+
+One result surprised me. When rain *ends* a chase rather than shortening it, run rate does not favour the chasing side. It leans the other way, because at the 30-over mark most chasing sides are behind the required rate with wickets in hand, and run rate gives them no credit for the wickets. Its mistakes went against the chaser about five times as often as for them. The old rule was unfair in both directions, depending on when the rain came. That is a stronger argument against it than the usual one.
+
+## The price
+
+What cricket gave up for all this was the ability of anyone in the ground to work out the target in their head. Run rate was wrong, but a twelve-year-old could do it. Duckworth–Lewis needs a table, and the version used in internationals needs software that is not public.
+
+That price is real. It was paid in full [at Durban in 2003](/classics/2003-durban/), when a dressing room read the par score as the target and South Africa went out of another World Cup in the rain. The method had given them the right number. But a rule that people cannot follow will be misread sooner or later, and the Standard Edition is at least one you can follow with a sheet of paper and some patience. You can [try it yourself](/scorebook/dl-calculator/).
+
+The game has kept the trade. Martin-Jenkins asked for something better, and somebody, somewhere, came up with it.
+
+<DataCredit note="The 1992 semi-final predates Cricsheet's records; its figures are from published scorecards, and the three targets are our own calculations." />
