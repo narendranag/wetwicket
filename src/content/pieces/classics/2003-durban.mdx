@@ -1,0 +1,73 @@
+---
+title: The Wrong Number
+dek: "Durban, 2003. South Africa hit the six they thought they needed, blocked the next ball, and walked off into the rain and out of their own World Cup."
+author: narendra
+published: 2026-10-01
+series: rain-rules
+seriesOrder: 5
+tags: [rain-rules, duckworth-lewis, world-cup, south-africa, sri-lanka, odi]
+matches: ['65272']
+---
+import match from '../../../data/classics/65272.json';
+import DataCredit from '../../../components/DataCredit.astro';
+import MatchStrip from '../../../components/classics/MatchStrip.astro';
+import ParChase from '../../../components/classics/ParChase.astro';
+import ParSheet from '../../../components/classics/ParSheet.astro';
+import Moments from '../../../components/classics/Moments.astro';
+
+<MatchStrip match={match} />
+
+With one ball left before the rain closed in on Kingsmead, Mark Boucher did what a batsman does when the job is finished. He blocked it, and he did not run.
+
+He had just hit Muttiah Muralitharan for six. The word from the South African dressing room was that 229 was the number to have on the board at the end of the 45th over, and South Africa now had 229. The umpires took the players off. Nobody came back out.
+
+229 was the par score. Par is the score that ties.
+
+## A match they had to win
+
+It was South Africa's last game in Pool B, and the hosts needed a win to stay in their own tournament. Sri Lanka batted first and Marvan Atapattu made 124 from 129 balls. He and Aravinda de Silva, who made 73, put on 152 for the fourth wicket. South Africa then took six wickets for 26 runs at the end of the innings, which kept the total to 268 for 9.
+
+The chase began well. Graeme Smith and Herschelle Gibbs had 65 on the board in 11 overs, and after 28 overs South Africa were 147 for 3. Then Muralitharan bowled Gibbs for 73 with the last ball of the 29th over, and Sanath Jayasuriya had Boeta Dippenaar leg before with the first ball of the 30th. 149 for 3 had become 149 for 5.
+
+All this time the clouds were coming in, and both sides knew it. From here on there were two games on the field: the one on the scoreboard, and the one on the Duckworth–Lewis sheet.
+
+<ParChase match={match} caption="South Africa's chase against the score they needed to be level if the rain came for good." />
+
+The chart shows the second game. While the openers were in, South Africa were so far ahead of par that rain would have been welcome: 19 runs clear after 28 overs. The two wickets in two balls did more damage on the sheet than on the scoreboard. The par score jumped by 36 in two overs, and South Africa went from 19 ahead to 14 behind.
+
+Boucher and Shaun Pollock, the captain, spent the next 12 overs getting it back. After 42 overs they were 210 for 5, and two runs ahead.
+
+## The run-out that moved the number
+
+In the 43rd over Pollock was run out for 25. Losing the captain was bad. What it did to the sheet was worse.
+
+<ParSheet match={match} caption="The line of the par sheet for the end of the 45th over, from our copy of the 2002 table. South Africa were six down." />
+
+Every wicket costs resources, so every wicket pushes the par up. With five down, the par at the end of the 45th over was 226. With six down it was 229. Pollock's wicket added three runs to what South Africa needed, at the moment they could least afford it.
+
+Lance Klusener came in and could not get the ball away. Russel Arnold's 44th over went for a single. With one over left before the weather was certain to win, South Africa were 216 for 6, eight behind par, and needed 14 from Muralitharan's over to be in front.
+
+## Six balls, and one more
+
+<Moments moments={[
+  { when: 'Over 44.1', score: '217/6', title: 'Boucher takes a single', text: 'Which puts Klusener, who has barely laid bat on ball, on strike.' },
+  { when: '44.2, 44.3', score: '217/6', title: 'Two dot balls', text: 'Klusener cannot score. Thirteen needed from four balls to win; twelve to tie.' },
+  { when: 'Wide', score: '222/6', title: 'Five wides', text: 'Muralitharan bowls a wide that runs away to the boundary. The ball has to be bowled again.' },
+  { when: '44.4', score: '223/6', title: 'Klusener gets off strike', text: 'A single, and Boucher has two balls. Seven to win.' },
+  { when: '44.5', score: '229/6', title: 'Boucher hits a six', text: 'He celebrates. As far as he knows, that is the match. South Africa are level with par, with one ball of the over left.' },
+  { when: '44.6', score: '229/6', title: 'The block', text: 'Boucher defends the last ball and stays in his crease. One run from it would have won the match. The rain gets heavier and the players leave the field.' },
+]} />
+
+The message Boucher was playing to had come out from the dressing room at the end of the 44th over, and it said 229. The sheet did say 229. But a par sheet lists the scores at which the two sides are level. To win, you need one more.
+
+I ran the scorecard through our own copy of the 2002 table to check, and it comes out at 229 to the run. Sri Lanka's 268, multiplied by the 85.7% of their resources that South Africa had used with five overs left and six wickets down, is 229.68. Round it down and that is par. You can [do the same sum in the calculator](/scorebook/dl-calculator/), where this match is the first example.
+
+## After the rain
+
+The tie put Sri Lanka through to the Super Sixes along with Kenya and New Zealand. South Africa, hosts and among the favourites, were out in the first round. Pollock lost the captaincy soon afterwards, and a 22-year-old Graeme Smith was given the job.
+
+It was their third World Cup in four to end this way. In 1992 a rain rule left them needing 22 runs from one ball in the semi-final at Sydney. In 1999 a tie in the semi-final at Edgbaston sent Australia through instead. Durban was the cruellest in one respect: in 1992 the rule itself was absurd, and it was scrapped because of that match. In 2003 the method worked. It gave both sides a number, well in advance, on a sheet of paper. One of them read it as a target.
+
+That is why this match belongs in a series about rain rules. The argument for Duckworth–Lewis has always been that it is fairer than what came before, and the [evidence](/numbers/who-wins-when-it-rains/) largely backs that up. The argument against it has always been that nobody in the ground can follow it. At Kingsmead, with a World Cup going, the people who could not follow it were in the dressing room.
+
+<DataCredit note="Ball-by-ball detail of the final over is from the Cricsheet record of this match. The par scores are our own calculation from the published 2002 Standard Edition table." />

@@ -1,0 +1,52 @@
+---
+// A chase drawn against the D/L Standard Edition par after each over: above the par line, the
+// chasing side would win if play ended there. `match` comes from src/data/classics/.
+interface Props { match: any; caption?: string }
+const { match: m, caption } = Astro.props;
+const chase: number[][] = m.chase; // [over, runs, wickets, par]
+const S = m.innings[0].runs, team2 = m.innings[1].team, N = m.overs;
+const W = 720, H = 360, L = 40, R = 20, T = 20, B = 34;
+const yStep = 50, yMax = Math.ceil((S + 10) / yStep) * yStep;
+const x = (o: number) => L + (o / N) * (W - L - R);
+const y = (r: number) => T + (1 - r / yMax) * (H - T - B);
+const path = (col: number) => `M${x(0)},${y(0)}` + chase.map((c) => `L${x(c[0]).toFixed(1)},${y(c[col]).toFixed(1)}`).join('');
+const last = chase[chase.length - 1];
+const wickets = chase.filter((c, i) => c[2] > (chase[i - 1]?.[2] ?? 0));
+const yTicks = Array.from({ length: yMax / yStep + 1 }, (_, i) => i * yStep);
+const xTicks = Array.from({ length: N / 10 + 1 }, (_, i) => i * 10);
+// Label each line where the two are furthest apart.
+const gap = chase.reduce((a, c) => (Math.abs(c[1] - c[3]) > Math.abs(a[1] - a[3]) ? c : a));
+const up = gap[1] > gap[3] ? -1 : 1;
+---
+<figure class="par-chase">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img"
+    aria-label={`${team2}'s score after each over against the Duckworth-Lewis par score. After ${last[0]} overs they had ${last[1]} and the par was ${last[3]}.`}>
+    {yTicks.map((v) => (<><line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke="var(--grid)" /><text x={L - 6} y={y(v) + 4} text-anchor="end">{v}</text></>))}
+    {xTicks.map((v) => <text x={x(v)} y={H - 12} text-anchor="middle">{v === 0 ? 'Overs' : v}</text>)}
+    <line x1={L} x2={W - R} y1={y(S)} y2={y(S)} stroke="var(--muted)" stroke-dasharray="4 4" />
+    <text class="lbl" x={L + 6} y={y(S) - 7}>{m.innings[0].team} {S}</text>
+    <line x1={x(last[0])} x2={x(last[0])} y1={y(0)} y2={y(yMax)} stroke="var(--muted)" stroke-dasharray="2 4" />
+    <text class="lbl" x={x(last[0]) + 6} y={y(0) - 8}>Rain</text>
+    <path d={path(3)} fill="none" stroke="var(--r-se)" stroke-width="2" stroke-linejoin="round" />
+    <path d={path(1)} fill="none" stroke="var(--r-arr)" stroke-width="2.5" stroke-linejoin="round" />
+    {wickets.map((c) => (
+      <circle cx={x(c[0])} cy={y(c[1])} r="4.5" fill="var(--r-arr)" stroke="var(--surface)" stroke-width="2">
+        <title>{`Over ${c[0]}: ${c[1]}/${c[2]}, par ${c[3]}`}</title>
+      </circle>
+    ))}
+    <text class="lbl" x={x(gap[0])} y={y(gap[1]) + up * 14 + 4} text-anchor="middle" fill="var(--r-arr)">{team2}</text>
+    <text class="lbl" x={x(gap[0])} y={y(gap[3]) - up * 14 + 4} text-anchor="middle" fill="var(--r-se)">D/L par</text>
+    <circle cx={x(last[0])} cy={y(last[1])} r="6" fill="var(--r-arr)" stroke="var(--surface)" stroke-width="2" />
+    <text class="end" x={x(last[0]) - 10} y={y(last[1]) - 12} text-anchor="end">{last[1]}/{last[2]} · par {last[3]}</text>
+  </svg>
+  <figcaption>{caption} Par is the Standard Edition par (2002 table) for the wickets down at the end of each over, so it jumps when a wicket falls. Dots mark those overs.</figcaption>
+</figure>
+<style>
+  .par-chase { margin: 1.6em 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 10px; }
+  svg { width: 100%; height: auto; display: block; overflow: visible; }
+  text { fill: var(--muted); font: 11px var(--mono); }
+  text.lbl { font: 600 13px var(--body); }
+  text.lbl:not([fill]) { fill: var(--muted); }
+  text.end { fill: var(--ink); font: 700 20px var(--display); }
+  figcaption { font-size: 14px; line-height: 1.5; color: var(--muted); }
+</style>

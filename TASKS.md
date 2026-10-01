@@ -1,6 +1,6 @@
 # Tasks
 
-Last updated: 2026-09-27
+Last updated: 2026-10-01
 
 ## Status
 
@@ -14,6 +14,9 @@ Last updated: 2026-09-27
   and real average) and a modern refit. Rebuilt by hand.
 - **The Archive:** `/matches/`, `/players/`, `/competitions/` and `/grounds/`, covering all
   22,983 Cricsheet matches and 18,554 Register people, served from D1.
+- **Rain Rules parts 3 to 5** (published 2026-10-01): the D/L calculator
+  (`/scorebook/dl-calculator/`), *Beat the Par* (`/nets/beat-the-par/`) and the Durban 2003
+  classic *The Wrong Number* (`/classics/2003-durban/`). Data from `pipeline/build_pieces.py`.
 - **Supporting pages:** `/data/` (Cricsheet credit and licence), `/about/`, author pages for
   Narendra Nag and Avirook Sen, RSS and sitemap.
 - **Nightly job** at 00:30 UTC, with secrets set. Verified: a cold-cache rebuild with a D1 update,
@@ -25,8 +28,9 @@ Last updated: 2026-09-27
 
 - [ ] **Watch the first real nightly run with new matches.** Check D1 counts, the
       `latest_match` meta value, that the redeploy succeeded, and the `rain.json` commit.
-- [ ] **Bump GitHub Actions versions** before Node 20 support is removed (`actions/checkout`,
-      `setup-node`, `setup-python`, `cache`). GitHub already shows deprecation warnings.
+- [ ] **Confirm the bumped GitHub Actions run cleanly.** checkout v7, setup-node v7,
+      setup-python v7 and cache v6 were pushed on 2026-10-01 but have not run yet: the deploy
+      workflow ignores `.github/` changes. The next nightly run and the next deploy will show it.
 - [ ] **Show Avirook his bio** (`src/content/authors/avirook-sen.md`) and get his approval.
 - [ ] **Decide on domain auto-renew.** It is OFF, and wetwicket.com expires on 2027-09-27. The
       user decides: it's a recurring charge.
@@ -35,9 +39,11 @@ Last updated: 2026-09-27
 
 - [ ] Essay in The Long Room on how D/L came to be (ARR, then the 1992 MPO semi-final, then D/L,
       then DLS).
-- [ ] *Beat the par* in The Nets: the player guesses who DLS would favour before it's revealed.
-- [ ] D/L Standard Edition calculator in Scorebook, using `se_innings_resource` and `se_target`.
-- [ ] Classics: breakdowns of famous rain-affected matches.
+- [ ] Classics: more rain-affected matches, using the components in `src/components/classics/`
+      and `pipeline/build_pieces.py <match id>`. Candidates in Cricsheet: the 2015 World Cup
+      semi-final (656491), the 2007 World Cup final (247507).
+- [ ] *Beat the Par*: a daily over that is the same for everyone; penalty runs and minimum-overs
+      rules in the calculator.
 - [ ] Link rain-hit matches and replay examples to Archive match pages. Done for the scorecard
       links; consider adding the replay's par scores to each match page.
 

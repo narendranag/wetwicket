@@ -1,0 +1,85 @@
+---
+// Interactive piece: markup here, behaviour in public/assets/calc.js (maths in dl.js), table in public/data/.
+import '../../styles/calc.css';
+---
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Duckworth–Lewis · Standard Edition</div>
+    <h1>The D/L Calculator</h1>
+    <p class="lede">Set a revised target the way a scorer would with the published tables: enter the first innings, say when the rain came and what it cost, and read off the target and the par sheet. This is the Standard Edition, the version anyone can work out by hand.</p>
+  </header>
+
+  <div class="examples">
+    <span class="eyebrow">Try</span>
+    <div class="chips" id="examples"></div>
+  </div>
+
+  <div class="calc">
+    <form class="inputs" id="form" autocomplete="off">
+      <fieldset>
+        <legend>The match</legend>
+        <div class="row">
+          <label class="field">Overs a side<input type="number" id="n" min="1" max="50" value="50" inputmode="numeric"></label>
+          <div class="field"><span>Level</span>
+            <div class="seg" id="g50" role="group" aria-label="Level of cricket">
+              <button type="button" data-v="245">Full members</button><button type="button" data-v="200">Others</button>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><i class="swatch t1"></i>Team 1, batting first</legend>
+        <div class="row">
+          <label class="field">Final score<input type="number" id="s" min="0" max="999" value="250" inputmode="numeric"></label>
+        </div>
+        <div class="stops" id="stops1"></div>
+        <button type="button" class="add" data-add="1">Add a stoppage</button>
+      </fieldset>
+
+      <fieldset>
+        <legend><i class="swatch t2"></i>Team 2, chasing</legend>
+        <div class="row">
+          <label class="field">Overs at the start<input type="text" id="n2" inputmode="decimal" aria-describedby="n2-hint"></label>
+          <label class="field">Score when play ended<input type="number" id="s2" min="0" max="999" inputmode="numeric" placeholder="optional"></label>
+        </div>
+        <p class="hint" id="n2-hint">Leave the overs blank to give Team 2 as many as Team 1's innings ended up with.</p>
+        <div class="stops" id="stops2"></div>
+        <button type="button" class="add" data-add="2">Add a stoppage</button>
+      </fieldset>
+    </form>
+
+    <section class="result" aria-live="polite">
+      <div class="verdict" id="verdict"></div>
+      <div class="resources" id="resources"></div>
+      <p class="working" id="working"></p>
+    </section>
+  </div>
+
+  <section id="sheet-sec" aria-labelledby="h-sheet">
+    <h2 id="h-sheet">The par sheet</h2>
+    <p class="muted" id="sheet-note"></p>
+    <div class="tbl"><table id="sheet"></table></div>
+  </section>
+
+  <section class="notes">
+    <h2>What this is, and isn't</h2>
+    <p><b>It is the Standard Edition.</b> Frank Duckworth and Tony Lewis's method as published in the ICC playing conditions, using the 2002 resource table. It remains the official fallback wherever the computer version isn't available, which covers most club and school cricket. Our code reproduces all six of the ICC's worked examples.</p>
+    <p><b>It isn't what you see on television.</b> International matches have used software since 2004: first the D/L Professional Edition, and since 2014 the Duckworth–Lewis–Stern method. Neither is public. They agree with the Standard Edition for ordinary totals and part company when the first innings is very large.</p>
+    <p><b>Level.</b> When Team 2 end up with more resources than Team 1, the target goes up by a share of the average 50-over score: 245 for matches involving Full Members or first-class teams, 200 for under-19, women's and Associate matches, as the 2002 conditions put it.</p>
+    <p><b>Not covered:</b> penalty runs, and the minimum overs a chase needs to count as a match (20 in a one-day international, 5 in a T20).</p>
+  </section>
+</div>
+
+<template id="stop-row">
+  <div class="stop">
+    <label class="field">Stopped after<input type="text" data-k="bowled" inputmode="decimal" placeholder="20.0"><small>overs</small></label>
+    <label class="field">Wickets down<input type="number" data-k="wkts" min="0" max="9" value="0" inputmode="numeric"></label>
+    <label class="field">Innings cut to<input type="text" data-k="length" inputmode="decimal" placeholder="40"><small>overs</small></label>
+    <label class="check"><input type="checkbox" data-k="ended">No more play</label>
+    <button type="button" class="remove" aria-label="Remove this stoppage">Remove</button>
+  </div>
+</template>
+
+<script is:inline src="/assets/dl.js"></script>
+<script is:inline src="/assets/calc.js"></script>

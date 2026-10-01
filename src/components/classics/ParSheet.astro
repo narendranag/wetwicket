@@ -1,0 +1,29 @@
+---
+// One line of the par sheet: the par score when play ended, for every number of wickets down.
+interface Props { match: any; caption?: string }
+const { match: m, caption } = Astro.props;
+const last = m.chase[m.chase.length - 1]; // [over, runs, wickets, par]
+---
+<figure class="sheet">
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Wickets down</th>{m.sheet.map((_: number, w: number) => <th class:list={{ hit: w === last[2] }}>{w}</th>)}</tr></thead>
+      <tbody>
+        <tr><th>Par, {last[0]} overs</th>{m.sheet.map((p: number, w: number) => <td class:list={{ hit: w === last[2] }}>{p}</td>)}</tr>
+        <tr><th>To win</th>{m.sheet.map((p: number, w: number) => <td class:list={{ hit: w === last[2] }}>{p + 1}</td>)}</tr>
+      </tbody>
+    </table>
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+<style>
+  .sheet { margin: 1.6em 0; display: grid; gap: 10px; }
+  .scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+  table { border-collapse: collapse; width: 100%; font: 14px var(--mono); font-variant-numeric: tabular-nums; }
+  th, td { padding: 9px 7px; text-align: right; }
+  th:first-child { text-align: left; white-space: nowrap; font: 500 11px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  thead th { font: 500 12px var(--mono); color: var(--muted); border-bottom: 1px solid var(--line); }
+  tbody tr + tr th, tbody tr + tr td { border-top: 1px solid var(--grid); }
+  .hit, thead th.hit { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+  figcaption { font-size: 14px; line-height: 1.5; color: var(--muted); }
+</style>

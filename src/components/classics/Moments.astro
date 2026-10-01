@@ -1,0 +1,25 @@
+---
+// The key moments of a match, in order: when, the score, and what it changed.
+interface Moment { when: string; score: string; title: string; text: string }
+interface Props { moments: Moment[] }
+const { moments } = Astro.props;
+---
+<ol class="moments">
+  {moments.map((m) => (
+    <li>
+      <div class="when"><span>{m.when}</span><b>{m.score}</b></div>
+      <div class="what"><h3>{m.title}</h3><p>{m.text}</p></div>
+    </li>
+  ))}
+</ol>
+<style>
+  .moments { list-style: none; margin: 1.6em 0; padding: 0; display: grid; }
+  li { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 0 18px; padding-block: 14px; border-top: 1px solid var(--line); }
+  li:last-child { border-bottom: 1px solid var(--line); }
+  .when { display: grid; gap: 4px; align-content: start; }
+  .when span { font: 500 11.5px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .when b { font: 700 26px/1 var(--display); font-variant-numeric: tabular-nums; }
+  h3 { font: 600 20px/1.1 var(--display); text-transform: uppercase; letter-spacing: .02em; margin: 0 0 4px; }
+  p { margin: 0; font-size: 16px; line-height: 1.55; }
+  @media (max-width: 520px) { li { grid-template-columns: 1fr; gap: 6px; } .when { grid-auto-flow: column; justify-content: start; align-items: baseline; gap: 10px; } }
+</style>

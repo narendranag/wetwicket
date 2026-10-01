@@ -1,0 +1,31 @@
+---
+// Interactive piece: markup here, behaviour in public/assets/par.js, chases in public/data/par-game.json.
+import '../../styles/par.css';
+---
+<div class="wrap">
+  <header>
+    <div class="eyebrow">The Nets · one over, six real chases</div>
+    <h1>Beat the Par</h1>
+    <p class="lede">A real chase, stopped where it never was. The rain comes, nobody goes back out, and Duckworth–Lewis has to name the score the chasing side should have had by now. You get one guess a ball. Land close and it goes for runs. Miss by a street and you're out.</p>
+  </header>
+
+  <div class="board" aria-label="This over">
+    <ol class="balls" id="balls"></ol>
+    <div class="total"><span class="eyebrow">This over</span><b id="total">0/0</b></div>
+    <div class="total"><span class="eyebrow">Your best</span><b id="best">–</b></div>
+  </div>
+
+  <section class="card" id="card" aria-live="polite"></section>
+
+  <details class="rules">
+    <summary>How the scoring works</summary>
+    <div class="tbl"><table>
+      <thead><tr><th>You're out by (ODI)</th><th>(T20I)</th><th>It goes for</th></tr></thead>
+      <tbody id="bands"></tbody>
+    </table></div>
+    <p>The par is the Duckworth–Lewis <b>Standard Edition</b> par, from the published 2002 table: Team 1's score multiplied by the share of resources the chasing side has used, rounded down. International matches now use DLS software that isn't public, so the real number on the day could differ by a run or two for ordinary totals, and by more for very big ones.</p>
+    <p>Every chase is a real international that finished without rain. We chose the over at which to stop it. <a href="/scorebook/dl-calculator/">Work out any par yourself</a> with the calculator.</p>
+  </details>
+</div>
+
+<script is:inline src="/assets/par.js"></script>

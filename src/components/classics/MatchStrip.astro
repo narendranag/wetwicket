@@ -1,0 +1,34 @@
+---
+// The scoreline at the top of a Classics piece, linking to the Archive scorecard.
+// `match` is a file from src/data/classics/, written by pipeline/build_pieces.py.
+import { oversFrom, score, fmtDay } from '../../lib/cricket';
+
+interface Props { match: any }
+const { match: m } = Astro.props;
+---
+<aside class="strip" aria-label="The match">
+  <div class="where">{m.event}{m.detail && ` · ${m.detail}`} · {m.venue} · {fmtDay(m.date)}</div>
+  <div class="sides">
+    {m.innings.map((i: any, n: number) => (
+      <div>
+        <span class="team"><i class={`swatch t${n + 1}`}></i>{i.team}</span>
+        <b>{score(i.runs, i.wkts, 0)}</b>
+        <span class="ov">{oversFrom(i.balls, 6)} overs</span>
+      </div>
+    ))}
+  </div>
+  <div class="out"><b>{m.outcome}</b> · <a href={`/matches/${m.id}/`}>Full scorecard</a></div>
+</aside>
+<style>
+  .strip { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; display: grid; gap: 12px; margin: 0 0 1.4em; font-size: 15px; line-height: 1.4; }
+  .where { font: 500 12px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .sides > div { display: grid; gap: 2px; }
+  .team { display: inline-flex; align-items: center; gap: 7px; font: 600 18px/1.1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+  .t1 { background: var(--r-se); }
+  .t2 { background: var(--r-arr); }
+  .sides b { font: 700 clamp(36px, 8vw, 52px)/1 var(--display); font-variant-numeric: tabular-nums; }
+  .ov { color: var(--muted); font-size: 13.5px; }
+  .out b { font-weight: 600; }
+</style>
