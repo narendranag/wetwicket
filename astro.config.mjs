@@ -10,5 +10,9 @@ export default defineConfig({
   site: 'https://wetwicket.com',
   trailingSlash: 'always',
   adapter: cloudflare(),
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    // The Archive's sitemaps are served from D1 by src/pages/archive-[kind].xml.ts.
+    sitemap({ customSitemaps: ['matches', 'players', 'places'].map((k) => `https://wetwicket.com/archive-${k}.xml`) }),
+  ],
 });

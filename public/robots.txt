@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wetwicket.com/sitemap-index.xml
