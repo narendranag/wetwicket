@@ -71,6 +71,11 @@ npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
 
 ## Conventions
 
+- **Licensing (2026-10-01): Wet Wicket is a product, not open source.** The repo is public so the
+  data can be picked up. `LICENSE` reserves all rights in the code, pipeline, design, charts and
+  writing; `LICENSE-DATA.md` puts Cricsheet's data and the datasets derived from it under ODC-By
+  1.0. `data/reference/` is third-party and excluded. Never describe the code as MIT or open
+  source, and keep README, `/data` and both licence files in agreement.
 - **Credit Cricsheet** (Stephen Rushe, ODC Attribution License 1.0) on every page that uses its
   data: use `<DataCredit />`. Cricsheet has no per-match pages, so link matches to our own
   `/matches/<id>/`.
