@@ -78,7 +78,9 @@ See `data/reference/SOURCES.md` for every source.
 
 Match data and the Cricsheet Register are © [Cricsheet](https://cricsheet.org/) (Stephen Rushe), used
 under the [Open Data Commons Attribution License 1.0](https://opendatacommons.org/licenses/by/1-0/).
-Everything Wet Wicket derives from them is offered under the same licence.
+The datasets Wet Wicket derives from them are offered under the same licence. See
+[`LICENSE-DATA.md`](LICENSE-DATA.md) for what that covers and how to attribute it.
 Wet Wicket is independent and not affiliated with the ICC or the authors of the DLS method.
 
-Code is released under the MIT License.
+The repository is public so the data can be picked up and the methods read. The code, design and
+writing are not open source: all rights are reserved, as set out in [`LICENSE`](LICENSE).
