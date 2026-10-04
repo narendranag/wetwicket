@@ -1,0 +1,38 @@
+# analytics.yaml — GA4 + Google Tag Manager for Wet Wicket. Source of truth: `analytics setup` and
+# `analytics sync` apply it and write the IDs below. Marketing events only; in-app behaviour goes to PostHog.
+# Guide: ~/claude-computer/docs/DEV-GUIDELINES.md, "Analytics".
+project: Wet Wicket
+domain: wetwicket.com
+ga:
+  account: accounts/324788655
+  property: properties/556072136
+  stream: properties/556072136/dataStreams/15854544336
+  measurement_id: G-H14P5LK5VK
+gtm:
+  account: accounts/211176835
+  container: accounts/211176835/containers/266025790
+  public_id: GTM-NJSJFFP6
+  workspace: accounts/211176835/containers/266025790/workspaces/2
+events:
+  # Fired once per page view, the first time a visitor uses an interactive piece:
+  # window.dataLayer.push({event: 'use_interactive', piece: 'dl-calculator'})
+  # piece: dl-calculator | beat-the-par | rain-explorer | replay
+  - name: use_interactive
+    key_event: true
+    params: [piece]
+custom_dimensions:
+  - parameter: piece
+    name: Interactive piece
+funnels:
+  interactive:
+    steps: [page_view, use_interactive]
+reports:
+  acquisition:
+    dimensions: [sessionDefaultChannelGroup, sessionSource]
+    metrics: [sessions, totalUsers, keyEvents]
+  landing-pages:
+    dimensions: [landingPage]
+    metrics: [sessions, keyEvents]
+  interactives:
+    dimensions: ["customEvent:piece"]
+    metrics: [eventCount, totalUsers]
