@@ -64,7 +64,7 @@ node scripts/test-dl.mjs                         # the same examples against pub
 .venv/bin/python pipeline/build_pieces.py 65272  # data for the calculator, the game and a classic
 
 # Cloudflare (always use the site token)
-set -a; source ~/.config/secrets.env; set +a; export CLOUDFLARE_API_TOKEN="$WETWICKET_CLOUDFLARE_API_TOKEN"
+eval "$(secrets env --only WETWICKET_CLOUDFLARE_API_TOKEN)"; export CLOUDFLARE_API_TOKEN="$WETWICKET_CLOUDFLARE_API_TOKEN"
 scripts/deploy-ci.sh "message"                   # deploy a new version without touching routes
 npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
 ```
@@ -98,7 +98,7 @@ npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
   which the site token lacks. Use `scripts/deploy-ci.sh`.
   - The original `CLOUDFLARE_API_TOKEN` has zone and Registrar access. It created the `www` →
     apex redirect rule and bought the domain.
-- **Env vars:** `~/.config/secrets.env` needs `set -a` when sourced, or Python won't see the vars.
+- **Env vars:** use `eval "$(secrets env --only NAME,…)"` (exports them) or `secrets exec --only NAME,… -- <cmd>`, or Python won't see the vars.
 - **zsh:** in shell loops, never name a variable `path` (it wipes `PATH`), and quote paths
   containing `[...]`.
 - **The Professional Edition** in the replay analysis is Chris Baker's 2011 reconstruction, not
