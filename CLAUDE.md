@@ -3,8 +3,41 @@
 A loving exploration of cricket, by cricket lovers, for cricket lovers. Live at https://wetwicket.com.
 Co-created by Narendra Nag and Avirook Sen. Repo: github.com/narendranag/wetwicket (public).
 
-Read `TASKS.md` for current status and what's next, and `docs/information-architecture.md`
-before adding content or pages.
+This brain follows the fleet's standard: how projects are built is in
+`~/claude-computer/docs/DEV-GUIDELINES.md` (secrets, docs, analytics, tasks), and the tools on the PATH
+are in `~/claude-computer/claude-global/CLAUDE.md`. Start with `TASKS.md` (what's next), then
+`docs/llms.txt` and `docs/01-information-architecture.md` before adding content or pages. Open
+hand-offs: `docs/HANDOFF-2026-10-04-analytics.md` (take GA4 + Tag Manager live).
+
+## Status
+
+**Live** at https://wetwicket.com. `www` redirects to the apex with a 301.
+
+- **Home and series:** front page, `/series/`, and the Rain Rules series hub.
+- **Rain Rules part 1:** *Rain Stopped Play* (`/scorebook/rain-hit-matches/`). 2,282 rain-hit
+  matches, filterable by format, country, year and gender. Refreshed nightly.
+- **Rain Rules part 2:** *Who Wins When It Rains* (`/numbers/who-wins-when-it-rains/`). 15,781
+  rain-free chases replayed under ARR, MPO, D/L 2002, the D/L Professional Edition (ICC average
+  and real average) and a modern refit. Rebuilt by hand.
+- **The Archive:** `/matches/`, `/players/`, `/competitions/` and `/grounds/`, covering all
+  22,983 Cricsheet matches and 18,554 Register people, served from D1.
+- **Rain Rules part 3** (published 2026-10-01): the Long Room essay *Someone, Somewhere*
+  (`/long-room/how-duckworth-lewis-came-to-be/`).
+- **Rain Rules parts 4 to 6** (published 2026-10-01): the D/L calculator
+  (`/scorebook/dl-calculator/`), *Beat the Par* (`/nets/beat-the-par/`) and the Durban 2003
+  classic *The Wrong Number* (`/classics/2003-durban/`). Data from `pipeline/build_pieces.py`.
+- **Supporting pages:** `/data/` (Cricsheet credit and licence), `/about/`, author pages for
+  Narendra Nag and Avirook Sen, RSS and sitemap.
+- **Search:** wetwicket.com is a verified Domain property in Google Search Console (DNS TXT
+  record in Cloudflare; don't remove it). `sitemap-index.xml` is submitted and lists the editorial
+  sitemap plus three D1-backed Archive sitemaps (`src/pages/archive-[kind].xml.ts`), about 40,600
+  URLs. `public/robots.txt` points to it.
+- **Nightly job** at 00:30 UTC, with secrets set. Verified: a cold-cache rebuild with a D1 update,
+  and a warm-cache no-op. The "new matches arrive" path (D1 delta, deploy, commit of rain.json)
+  has not yet run for real. Check the first run after Cricsheet next publishes.
+- **Deploy on push:** verified working.
+- **Analytics** (2026-10-04): GA4 property `properties/556072136` (`G-H14P5LK5VK`, loaded directly
+  by `gtag.js` today); Tag Manager container `GTM-NJSJFFP6` set up but not yet live — see the hand-off.
 
 ## Architecture
 
@@ -89,6 +122,18 @@ npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
 - **Formats:** Test, ODI, T20I, First-class, One-day (other), T20 league and The Hundred, which
   has five-ball sets and is kept separate.
 - **Commits:** end with `Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>`.
+
+## Fleet conventions
+
+- **Tasks:** `TASKS.md` with `## Now / ## Next / ## Later / ## Done`; `tasks-sync` copies them to the
+  vault. Decisions go in `DECISIONS.md` (`- [<host>] [YYYY-MM-DD] <decision> — <why>`), append-only.
+- **justfile:** `just setup | test | lint | run | build`. `just lint` checks the docs and `analytics.yaml`.
+- **Docs:** `docs/` follows the documentation standard — Markdown with front matter, rebuilt with
+  `docs-build docs` after every change; never edit `docs/index.html`, `docs/llms.txt` or `docs/data/`.
+- **Analytics:** GA4 + Tag Manager are defined in `analytics.yaml`; change it, then `analytics sync`,
+  then the site. Marketing events only. Never `analytics publish` without asking Narendra.
+- **Secrets:** from the fleet's sops store with `secrets exec --only NAME,… -- <cmd>` or
+  `eval "$(secrets env --only NAME,…)"` (see Commands); never in a file.
 
 ## Gotchas
 

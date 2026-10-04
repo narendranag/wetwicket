@@ -1,3 +1,20 @@
+---
+id: information-architecture
+title: Information architecture
+order: 1
+summary: How Wet Wicket is organised — principles, sections, URLs, the Archive, the content model, the front page and the first series.
+status: stable
+updated: 2026-10-04
+audience: [everyone]
+depends_on: [index]
+related: []
+defines: [section, series, piece, the Archive]
+answers:
+  - Which section does a new piece go in?
+  - What is a piece's permanent URL?
+  - How are series, pieces and the Archive related?
+---
+
 # Wet Wicket: information architecture
 
 A loving exploration of cricket, by cricket lovers, for cricket lovers: data explorations,

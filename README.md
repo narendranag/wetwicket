@@ -5,7 +5,7 @@ breakdowns of epic matches, browser games, essays and tools. Built with [Astro](
 and deployed as a static site on Cloudflare Pages.
 
 The site's structure (series, sections, URLs and content model) is described in
-[docs/information-architecture.md](docs/information-architecture.md).
+[docs/01-information-architecture.md](docs/01-information-architecture.md).
 
 ## Running the site
 

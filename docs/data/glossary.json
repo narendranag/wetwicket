@@ -1,0 +1,22 @@
+[
+  {
+    "term": "Piece",
+    "definition": "One published item — an essay, a data story, a game or a tool — signed by its author, with a permanent URL under its section"
+  },
+  {
+    "term": "Section",
+    "definition": "Where a piece lives, with a vernacular name: The Numbers, Classics, The Nets, The Long Room, Scorebook, The Archive"
+  },
+  {
+    "term": "Series",
+    "definition": "An ordered set of pieces on one theme, such as Rain Rules; it orders pieces but doesn't own their URLs"
+  },
+  {
+    "term": "The Archive",
+    "definition": "The match, player, competition and ground pages, served from D1 and covering everything in Cricsheet"
+  },
+  {
+    "term": "Cricsheet",
+    "definition": "The source of all match data (Stephen Rushe, ODC Attribution License 1.0), credited on every page that uses it"
+  }
+]

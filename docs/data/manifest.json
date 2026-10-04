@@ -1,0 +1,110 @@
+{
+  "title": "Wet Wicket documentation",
+  "summary": "Index of the documentation for Wet Wicket, a cricket magazine and archive built on Cricsheet data.",
+  "source_of_truth": "markdown",
+  "documents": [
+    {
+      "id": "index",
+      "title": "Wet Wicket documentation",
+      "order": 0,
+      "summary": "Index of the documentation for Wet Wicket, a cricket magazine and archive built on Cricsheet data.",
+      "status": "stable",
+      "updated": "2026-10-04",
+      "audience": [
+        "everyone"
+      ],
+      "depends_on": [],
+      "related": [
+        "information-architecture"
+      ],
+      "defines": [],
+      "answers": [
+        "Which document covers which topic?",
+        "What do the core terms mean?",
+        "Where are the machine-readable versions of these documents?"
+      ],
+      "file": "README.md",
+      "sections": [
+        {
+          "level": 2,
+          "title": "Reading order",
+          "anchor": "reading-order"
+        },
+        {
+          "level": 2,
+          "title": "Terms used throughout",
+          "anchor": "terms-used-throughout"
+        },
+        {
+          "level": 2,
+          "title": "Ways to read these documents",
+          "anchor": "ways-to-read-these-documents"
+        }
+      ]
+    },
+    {
+      "id": "information-architecture",
+      "title": "Information architecture",
+      "order": 1,
+      "summary": "How Wet Wicket is organised — principles, sections, URLs, the Archive, the content model, the front page and the first series.",
+      "status": "stable",
+      "updated": "2026-10-04",
+      "audience": [
+        "everyone"
+      ],
+      "depends_on": [
+        "index"
+      ],
+      "related": [],
+      "defines": [
+        "section",
+        "series",
+        "piece",
+        "the Archive"
+      ],
+      "answers": [
+        "Which section does a new piece go in?",
+        "What is a piece's permanent URL?",
+        "How are series, pieces and the Archive related?"
+      ],
+      "file": "01-information-architecture.md",
+      "sections": [
+        {
+          "level": 2,
+          "title": "Principles",
+          "anchor": "principles"
+        },
+        {
+          "level": 2,
+          "title": "Sections",
+          "anchor": "sections"
+        },
+        {
+          "level": 2,
+          "title": "URLs",
+          "anchor": "urls"
+        },
+        {
+          "level": 2,
+          "title": "The Archive",
+          "anchor": "the-archive"
+        },
+        {
+          "level": 2,
+          "title": "Content model",
+          "anchor": "content-model"
+        },
+        {
+          "level": 2,
+          "title": "Front page",
+          "anchor": "front-page"
+        },
+        {
+          "level": 2,
+          "title": "First series: Rain Rules",
+          "anchor": "first-series-rain-rules"
+        }
+      ]
+    }
+  ]
+}
