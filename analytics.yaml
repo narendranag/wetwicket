@@ -34,5 +34,6 @@ reports:
     dimensions: [landingPage]
     metrics: [sessions, keyEvents]
   interactives:
+    event: use_interactive
     dimensions: ["customEvent:piece"]
     metrics: [eventCount, totalUsers]
