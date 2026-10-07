@@ -11,7 +11,7 @@ hand-offs: `docs/HANDOFF-2026-10-04-analytics.md` (take GA4 + Tag Manager live).
 
 ## Status
 
-**Live** at https://wetwicket.com. `www` redirects to the apex with a 301.
+**Live** at https://wetwicket.com. `www` redirects to the apex with a 301, and `http://` to `https://` (Cloudflare "Always Use HTTPS", zone setting).
 
 - **Home and series:** front page, `/series/`, and the Rain Rules series hub.
 - **Rain Rules part 1:** *Rain Stopped Play* (`/scorebook/rain-hit-matches/`). 2,282 rain-hit
