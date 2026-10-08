@@ -11,6 +11,7 @@
 
 ## Next
 
+- [ ] Build: WetWicket content automation — write the workplan (from Google Tasks, 2026-10-08) #gtasks
 - [ ] **Fact-check the unsourced details in the two prose pieces**, published 2026-10-01 as written. _Someone, Somewhere_: Duckworth's nuclear-industry career, the 2010 MBEs, McMillan and Richardson at the crease and the last-ball single, Pringle bowling England's two cheapest overs. _The Wrong Number_: the 1992 and 1999 references.
 - [ ] **Check Search Console** (Indexing > Pages): how many Archive pages Google has picked up, and any crawl errors, about a week after 2026-10-01.
 - [ ] **Show Avirook his bio** (`src/content/authors/avirook-sen.md`) and get his approval.
