@@ -32,6 +32,7 @@
 - [ ] Search across matches, players and grounds from the nav. #archive
 - [ ] Seed the local D1 (`npm run db:local`) so Archive pages and the Archive sitemaps can be tested in dev; it is currently empty on this machine. #archive
 - [ ] Edge caching for D1 pages (Cache API in middleware). Pages set Cache-Control, but Workers responses aren't cached at the CDN by default. #archive
+- [ ] Motion on the site, if wanted: small CSS transitions behind `prefers-reduced-motion` (as in `rain.css`, `par.css`), not Motion-Primitives — see DECISIONS 2026-10-15. Haikei SVG backgrounds remain the explore note's suggestion for this site #design
 - [ ] Glossary (`/glossary/`), which the information architecture describes but doesn't yet exist. #archive
 
 ## Done
