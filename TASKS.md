@@ -6,11 +6,10 @@
 ## Now
 
 - [ ] **Take GA4 + Tag Manager live** — follow `docs/HANDOFF-2026-10-04-analytics.md`: decide consent with Narendra, swap the `gtag.js` snippet for GTM-NJSJFFP6, send `use_interactive` from the four interactive pieces, check in GTM Preview, deploy, publish (ask first) #analytics
-- [ ] **Watch the first real nightly run with new matches.** Check D1 counts, the `latest_match` meta value, that the redeploy succeeded, and the `rain.json` commit.
-- [ ] **Confirm the nightly workflow runs cleanly on the bumped Actions** (checkout v7, setup-node v7, setup-python v7, cache v6; pushed 2026-10-01). The deploy workflow already has, with no Node 20 warnings. The nightly's Python and cache steps were due to run first on 2026-10-02 at 00:30 UTC.
 
 ## Next
 
+- [ ] **Watch the first nightly with new matches on Ubuntu 26.** GitHub moves `ubuntu-latest` to Ubuntu 26 from 2026-10-19; the runs up to 2026-10-20 were still on ubuntu-24.04. If the Python or wrangler steps break, pin `runs-on: ubuntu-24.04` in `nightly.yml` and `deploy.yml`.
 - [ ] Build: WetWicket content automation — write the workplan (from Google Tasks, 2026-10-08) #gtasks
 - [ ] **Fact-check the unsourced details in the two prose pieces**, published 2026-10-01 as written. _Someone, Somewhere_: Duckworth's nuclear-industry career, the 2010 MBEs, McMillan and Richardson at the crease and the last-ball single, Pringle bowling England's two cheapest overs. _The Wrong Number_: the 1992 and 1999 references.
 - [ ] **Check Search Console** (Indexing > Pages): how many Archive pages Google has picked up, and any crawl errors, about a week after 2026-10-01.
@@ -37,5 +36,6 @@
 
 ## Done
 
+- [x] Nightly verified on the bumped Actions and with new matches (checked 2026-10-20): all runs 2026-10-01 to 10-20 succeeded with no deprecation warnings. Two carried matches: 10-08 and 10-15 (53 matches, 40 D1 queries / 111k rows, worker version 8176ced8 deployed at 100%, rain.json committed as e79bd87). Live Archive: 23,060 matches, up to 14 Oct 2026 — matching Cricsheet's last publish (Last-Modified 2026-10-14 22:23 UTC), so the quiet nights since are expected
 - [x] GA4 + Tag Manager set up from `analytics.yaml` (2026-10-04): container GTM-NJSJFFP6, key event `use_interactive`, dimension `piece`; version 2 saved, not published
 - [x] Brain brought to the claude-computer standard (2026-10-04): Now/Next/Later/Done tasks, DECISIONS.md, justfile, docs in the documentation standard, gitleaks pre-commit
