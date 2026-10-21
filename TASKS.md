@@ -5,11 +5,12 @@
 
 ## Now
 
+- [ ] **Resume here:** nightly checks are done (see Done, 2026-10-20). Next is GA4 + Tag Manager: open `docs/HANDOFF-2026-10-04-analytics.md` and start with the consent decision, which waits on Narendra.
 - [ ] **Take GA4 + Tag Manager live** — follow `docs/HANDOFF-2026-10-04-analytics.md`: decide consent with Narendra, swap the `gtag.js` snippet for GTM-NJSJFFP6, send `use_interactive` from the four interactive pieces, check in GTM Preview, deploy, publish (ask first) #analytics
 
 ## Next
 
-- [ ] **Watch the first nightly with new matches on Ubuntu 26.** GitHub moves `ubuntu-latest` to Ubuntu 26 from 2026-10-19; the runs up to 2026-10-20 were still on ubuntu-24.04. If the Python or wrangler steps break, pin `runs-on: ubuntu-24.04` in `nightly.yml` and `deploy.yml`.
+- [ ] **Watch the first nightly with new matches on Ubuntu 26.** GitHub moves `ubuntu-latest` to Ubuntu 26 from 2026-10-19; the runs up to 2026-10-20 were still on ubuntu-24.04. Assessed low risk on 2026-10-21: actions/python-versions ships 3.12.15 for 26.04, the deps are numpy/pandas/scipy wheels, Node and wrangler don't care, and the match-database cache is OS-independent (the pip cache misses once). Migration completes by 2026-11-19. If the Python or wrangler steps break, pin `runs-on: ubuntu-24.04` in `nightly.yml` and `deploy.yml`.
 - [ ] Build: WetWicket content automation — write the workplan (from Google Tasks, 2026-10-08) #gtasks
 - [ ] **Fact-check the unsourced details in the two prose pieces**, published 2026-10-01 as written. _Someone, Somewhere_: Duckworth's nuclear-industry career, the 2010 MBEs, McMillan and Richardson at the crease and the last-ball single, Pringle bowling England's two cheapest overs. _The Wrong Number_: the 1992 and 1999 references.
 - [ ] **Check Search Console** (Indexing > Pages): how many Archive pages Google has picked up, and any crawl errors, about a week after 2026-10-01.
