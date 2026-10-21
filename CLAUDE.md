@@ -34,7 +34,9 @@ hand-offs: `docs/HANDOFF-2026-10-04-analytics.md` (take GA4 + Tag Manager live).
   URLs. `public/robots.txt` points to it.
 - **Nightly job** at 00:30 UTC, with secrets set. Verified: a cold-cache rebuild with a D1 update,
   and a warm-cache no-op. The "new matches arrive" path (D1 delta, deploy, commit of rain.json)
-  has not yet run for real. Check the first run after Cricsheet next publishes.
+  ran for real on 2026-10-08 and 2026-10-15. Cricsheet publishes in batches, so several quiet
+  nights in a row (`No new matches since the last run`) are normal; compare with the
+  `Last-Modified` of `recently_added_7_json.zip` before suspecting the job.
 - **Deploy on push:** verified working.
 - **Analytics** (2026-10-04): GA4 property `properties/556072136` (`G-H14P5LK5VK`, loaded directly
   by `gtag.js` today); Tag Manager container `GTM-NJSJFFP6` set up but not yet live — see the hand-off.
