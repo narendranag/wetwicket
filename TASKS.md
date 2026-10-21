@@ -37,6 +37,7 @@
 
 ## Done
 
+- [x] GA Google signals off, declared as `ga.google_signals: false` in analytics.yaml (2026-10-21): the property already had it disabled, so sync changed nothing; no GTM change, nothing published (2052a5a)
 - [x] Nightly verified on the bumped Actions and with new matches (checked 2026-10-20): all runs 2026-10-01 to 10-20 succeeded with no deprecation warnings. Two carried matches: 10-08 and 10-15 (53 matches, 40 D1 queries / 111k rows, worker version 8176ced8 deployed at 100%, rain.json committed as e79bd87). Live Archive: 23,060 matches, up to 14 Oct 2026 — matching Cricsheet's last publish (Last-Modified 2026-10-14 22:23 UTC), so the quiet nights since are expected
 - [x] GA4 + Tag Manager set up from `analytics.yaml` (2026-10-04): container GTM-NJSJFFP6, key event `use_interactive`, dimension `piece`; version 2 saved, not published
 - [x] Brain brought to the claude-computer standard (2026-10-04): Now/Next/Later/Done tasks, DECISIONS.md, justfile, docs in the documentation standard, gitleaks pre-commit
