@@ -8,6 +8,7 @@ ga:
   property: properties/556072136
   stream: properties/556072136/dataStreams/15854544336
   measurement_id: G-H14P5LK5VK
+  google_signals: false   # advertising features off
 gtm:
   account: accounts/211176835
   container: accounts/211176835/containers/266025790
