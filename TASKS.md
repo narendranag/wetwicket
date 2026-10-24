@@ -9,6 +9,7 @@
 
 ## Next
 
+- [ ] **(owner) Delete the three merged branches?** `feat/glossary`, `feat/edge-cache`, `feat/ground-rain-scores` are merged into `main` (1e43baf) but still exist locally and on GitHub. Default: delete both copies (`git branch -d …`, `git push origin --delete …`).
 - [ ] **(owner) Cookie banner wording, and a privacy page?** The banner (in `src/layouts/Base.astro`, live since 2026-10-24) has no privacy page to link to; the site has none. Default: keep the wording; no privacy page for now.
 - [ ] **(owner) CricketData paid plan ($5.99/month) for scorecards on provisional matches?** On the free plan a scorecard costs 10 of the 100 daily calls, so provisional pages show the result and innings totals only. Default: stay on free; the nightly uses 1 call.
 - [ ] **Watch the first nightly with new matches on Ubuntu 26.** GitHub moves `ubuntu-latest` to Ubuntu 26 from 2026-10-19; the runs up to 2026-10-20 were still on ubuntu-24.04. Assessed low risk on 2026-10-21: actions/python-versions ships 3.12.15 for 26.04, the deps are numpy/pandas/scipy wheels, Node and wrangler don't care, and the match-database cache is OS-independent (the pip cache misses once). Migration completes by 2026-11-19. If the Python or wrangler steps break, pin `runs-on: ubuntu-24.04` in `nightly.yml` and `deploy.yml`.
