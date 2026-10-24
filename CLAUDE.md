@@ -181,6 +181,10 @@ npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
   Scorecards and ball-by-ball cost 10 calls each on the free plan. The cricScore feed has no venue or
   toss, `t1` isn't always the side that batted first, multi-day matches show one innings a side, and a
   Test at "Day 1: Stumps" is listed with `ms: result`; `fetch_recent.py` handles all of these.
+- **Edge cache** (`src/middleware.ts`, live 2026-10-24): D1 pages are cached per data centre for 6 h, keyed
+  by the Worker version, so any deploy empties it. A night with provisional changes but no Cricsheet
+  matches doesn't deploy, so Archive pages can lag that night's provisional update by up to 6 h.
+  `X-Edge-Cache: HIT|MISS` shows which.
 - **Cricbuzz:** not a data source. Its `robots.txt` disallows every non-search crawler and its terms
   forbid scraping (DECISIONS 2026-10-24).
 - **DNS:** the apex TXT record `google-site-verification=…` keeps the Search Console property
