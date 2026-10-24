@@ -138,11 +138,14 @@ function renderTable(list) {
   $("more").textContent = `Show ${Math.min(50, left)} more of ${nf.format(left)}`;
 }
 
+let ready = false; // the on-load render is not a use
 function render() {
+  if (ready) window.useInteractive?.("rain-explorer");
   syncFmt(); syncGender(); syncConf();
   $("from").value = S.from; $("to").value = S.to;
   const list = M.filter(m => matchOk(m));
   renderCountrySelect(); renderStats(list); renderChart(); renderCountries(); renderTable(list);
 }
 render();
+ready = true;
 })();

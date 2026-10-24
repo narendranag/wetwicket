@@ -92,7 +92,9 @@ function compute() {
   return { N, S, R1, R2, start2, length2: i2.length, target: DL.target(S, R1, R2, g50), end, sheet };
 }
 
+let ready = false; // the on-load render is not a use
 function render() {
+  if (ready) window.useInteractive?.("dl-calculator");
   syncG50();
   let c;
   try { c = compute(); } catch (msg) {
@@ -141,4 +143,5 @@ $("form").addEventListener("click", e => {
 $("form").addEventListener("submit", e => e.preventDefault());
 
 load(EXAMPLES[0]);
+ready = true;
 })();

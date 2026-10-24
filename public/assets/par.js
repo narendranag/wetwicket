@@ -76,6 +76,7 @@ function face() {
 }
 
 function reveal(c, guess) {
+  window.useInteractive?.("beat-the-par");
   const runs = shot(c, guess);
   balls.push(runs);
   board();

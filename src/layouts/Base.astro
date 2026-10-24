@@ -22,13 +22,21 @@ const fullTitle = path === '/' ? title : `${title} · Wet Wicket`;
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- Google tag (gtag.js) -->
-  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-H14P5LK5VK"></script>
+  <!-- Google Tag Manager (GTM-NJSJFFP6, analytics.yaml), Consent Mode v2 Advanced: everything denied
+       until the reader allows analytics on the banner; before that GA gets cookieless pings only. -->
   <script is:inline>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-H14P5LK5VK');
+    var wwConsent = 'denied';
+    try { if (localStorage.getItem('ww-consent') === 'granted') wwConsent = 'granted'; } catch (e) {}
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: wwConsent });
+    // The interactive pieces call this on the reader's first real use; it sends once per page view.
+    window.useInteractive = function (piece) {
+      if (window.useInteractive.sent) return;
+      window.useInteractive.sent = true;
+      dataLayer.push({ event: 'use_interactive', piece: piece });
+    };
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NJSJFFP6');
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{fullTitle}</title>
@@ -46,6 +54,7 @@ const fullTitle = path === '/' ? title : `${title} · Wet Wicket`;
   <link rel="stylesheet" href={`https://fonts.googleapis.com/css2?${FONTS}&display=swap`}>
 </head>
 <body>
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NJSJFFP6" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <nav class="site-nav" aria-label="Site">
     <div class="inner">
       <a class="wordmark" href="/">
@@ -69,8 +78,45 @@ const fullTitle = path === '/' ? title : `${title} · Wet Wicket`;
   <footer class="site-foot">
     <div class="inner">
       <p><b>Wet Wicket</b> is a loving exploration of cricket, by cricket lovers, for cricket lovers. <a href="/about/">About</a> · <a href="/rss.xml">RSS</a> · <a href="https://github.com/narendranag/wetwicket">Code and method</a></p>
-      <p>Match and player data from <a href="https://cricsheet.org/">Cricsheet</a> by Stephen Rushe, used under the <a href="https://opendatacommons.org/licenses/by/1-0/">Open Data Commons Attribution License 1.0</a>. <a href="/data/">About the data</a>. Wet Wicket is independent and not affiliated with the ICC.</p>
+      <p>Match and player data from <a href="https://cricsheet.org/">Cricsheet</a> by Stephen Rushe, used under the <a href="https://opendatacommons.org/licenses/by/1-0/">Open Data Commons Attribution License 1.0</a>. <a href="/data/">About the data</a>. Wet Wicket is independent and not affiliated with the ICC. <button type="button" class="link-button" data-consent-open>Cookie choice</button></p>
     </div>
   </footer>
+  <section class="consent" id="consent" aria-label="Cookie choice" hidden>
+    <p>May Google Analytics set a cookie, so we can tell a returning reader from a new one? Until you say yes, it stores nothing on your device and sees only that a page was opened.</p>
+    <div class="consent-actions">
+      <button type="button" class="consent-yes" data-consent="granted">Allow</button>
+      <button type="button" data-consent="denied">No thanks</button>
+    </div>
+  </section>
+  <script is:inline>
+    (function () {
+      var box = document.getElementById('consent');
+      var stored = null;
+      try { stored = localStorage.getItem('ww-consent'); } catch (e) {}
+      if (stored !== 'granted' && stored !== 'denied') box.hidden = false;
+      // Expire _ga and _ga_<stream> on this host and each parent domain gtag may have used.
+      function clearCookies() {
+        var labels = location.hostname.split('.');
+        document.cookie.split(';').forEach(function (c) {
+          var name = c.split('=')[0].trim();
+          if (name !== '_ga' && name.indexOf('_ga_') !== 0) return;
+          for (var i = 0; i < labels.length; i++) {
+            var domain = labels.slice(i).join('.');
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + (domain.indexOf('.') > 0 ? '; domain=.' + domain : '');
+          }
+          document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+        });
+      }
+      box.addEventListener('click', function (e) {
+        var choice = e.target.dataset && e.target.dataset.consent;
+        if (!choice) return;
+        try { localStorage.setItem('ww-consent', choice); } catch (err) {}
+        gtag('consent', 'update', { analytics_storage: choice });
+        if (choice === 'denied') clearCookies();
+        box.hidden = true;
+      });
+      document.querySelector('[data-consent-open]').addEventListener('click', function () { box.hidden = false; });
+    })();
+  </script>
 </body>
 </html>
