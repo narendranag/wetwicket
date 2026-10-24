@@ -1,0 +1,79 @@
+---
+import Base from '../layouts/Base.astro';
+
+// One term, one meaning, worded as the pieces word it. Link to a term with /glossary/#<id>.
+const GROUPS = [
+  {
+    name: 'Rain rules',
+    terms: [
+      { id: 'par-score', term: 'Par score', def: 'The score the chasing side needs to be level if the match ends now. Above it, they win. Below it, they lose. Level with it is a tie.' },
+      { id: 'revised-target', term: 'Revised target', def: 'The runs the chasing side must reach when its innings is shortened: one more than the par score for its full, shortened innings.' },
+      { id: 'resources', term: 'Resources', def: 'What a batting side has left to score runs with: overs remaining and wickets in hand, together. The Duckworth–Lewis table gives the share of a full innings’ resources still available at every combination of the two.' },
+      { id: 'g50', term: 'G50', def: 'The average score in a 50-over innings, used by the Duckworth–Lewis Standard Edition when the chasing side ends up with more resources than Team 1 had: 245 for matches involving Full Members or first-class teams, 200 for under-19, women’s and Associate matches, as the 2002 playing conditions put it.' },
+      { id: 'duckworth-lewis', term: 'Duckworth–Lewis method (D/L)', def: 'The rain rule devised by Frank Duckworth and Tony Lewis, used in international cricket from 1997. It sets the par score from the resources each side had, not from overs alone.' },
+      { id: 'standard-edition', term: 'Standard Edition', def: 'The version of Duckworth–Lewis anyone can work out by hand from a published table (revised in 2002). It is still the official fallback when the software is not available.' },
+      { id: 'professional-edition', term: 'Professional Edition', def: 'The 2004 version of Duckworth–Lewis, used in international cricket from 2004 to 2014. It adjusts the resource curve for high first-innings totals. Its parameters were never published; Wet Wicket uses Chris Baker’s 2011 reconstruction, not the ICC’s own version.' },
+      { id: 'dls', term: 'DLS (Duckworth–Lewis–Stern)', def: 'The method used in top-level cricket since 2014, revised by Steven Stern. It runs only inside ICC software and its parameters are not public.' },
+      { id: 'modern-refit', term: 'Modern refit', def: 'Wet Wicket’s stand-in for today’s DLS: Duckworth and Lewis’s own model refitted to first innings from 2015 onwards. It captures modern scoring patterns, but it is not the official DLS.' },
+      { id: 'average-run-rate', term: 'Average Run Rate (ARR)', def: 'The rain rule used until 1991: Team 1’s total scaled by the share of overs Team 2 has faced. It ignores wickets.' },
+      { id: 'most-productive-overs', term: 'Most Productive Overs (MPO)', def: 'The rain rule of the 1992 World Cup: if Team 2 has faced k overs, the par is the sum of Team 1’s k highest-scoring overs.' },
+      { id: 'vjd', term: 'VJD method', def: 'The rain rule devised by V. Jayadevan and used in some Indian domestic cricket. In the rain-hit match list, a result decided by it counts as confirmed.' },
+    ],
+  },
+  {
+    name: 'Rain-hit matches',
+    terms: [
+      { id: 'rain-hit', term: 'Rain-hit match', def: 'A match in Cricsheet with the signs of a stoppage, labelled confirmed or likely. Bad light and the occasional unfit pitch can leave the same signs as rain.' },
+      { id: 'confirmed', term: 'Confirmed', def: 'The result was decided by the DLS or VJD method, or the chasing side’s target was set over fewer overs than scheduled.' },
+      { id: 'likely', term: 'Likely', def: 'An abandoned no result, or a Test or first-class match drawn with under 70% of its available overs bowled.' },
+      { id: 'no-result', term: 'No result', def: 'A limited-overs match abandoned before either side could win under the playing conditions.' },
+    ],
+  },
+  {
+    name: 'The Archive',
+    terms: [
+      { id: 'cricsheet', term: 'Cricsheet', def: 'Stephen Rushe’s project publishing ball-by-ball records of cricket matches under the Open Data Commons Attribution License. Every match in the Archive comes from it.' },
+      { id: 'register', term: 'The Register', def: 'Cricsheet’s list of people, with an identifier for each player and official and links to other cricket databases. Player pages are keyed by it.' },
+      { id: 'worm', term: 'Worm', def: 'A chart of each side’s running total, over by over, with wickets marked.' },
+      { id: 'manhattan', term: 'Manhattan', def: 'A bar chart of the runs scored in each over, with wickets marked.' },
+      { id: 'fall-of-wickets', term: 'Fall of wickets', def: 'The team score, and the over, at which each wicket fell.' },
+      { id: 'net-run-rate', term: 'Net run rate (NRR)', def: 'A side’s runs per over scored minus its runs per over conceded across a competition. Competition tables use it to separate sides level on wins.' },
+      { id: 'the-hundred', term: 'The Hundred', def: 'The English competition of 100-ball innings, bowled in sets of five balls. Wet Wicket keeps it apart from T20 because its overs are not six balls.' },
+    ],
+  },
+];
+---
+<Base title="Glossary" description="The terms Wet Wicket uses, from par scores and resources to worms and Manhattans, each with one meaning.">
+  <div class="page">
+    <header class="page-head">
+      <span class="kicker">Glossary</span>
+      <h1>Glossary</h1>
+      <p>The words we use, each with one meaning.</p>
+    </header>
+    <div class="prose glossary">
+      {GROUPS.map((g) => (
+        <section>
+          <h2>{g.name}</h2>
+          <dl>
+            {g.terms.map((t) => (
+              <div id={t.id}>
+                <dt><a href={`#${t.id}`}>{t.term}</a></dt>
+                <dd>{t.def}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .glossary dl { margin: 0; display: grid; gap: 14px; }
+  .glossary dt { font-weight: 600; }
+  .glossary dt a { color: var(--ink); text-decoration: none; }
+  .glossary dt a:hover { color: var(--accent); }
+  .glossary dd { margin: 2px 0 0; }
+  .glossary [id]:target dt a { color: var(--accent); }
+  .glossary [id] { scroll-margin-top: 16px; }
+</style>
