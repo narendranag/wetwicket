@@ -22,6 +22,7 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CRICKETDATA_API_KEY: ${{ secrets.CRICKETDATA_API_KEY }}
     steps:
       - uses: actions/checkout@v7
 
@@ -49,6 +50,17 @@ jobs:
       - name: Fetch and ingest Cricsheet changes
         id: update
         run: python pipeline/update.py
+
+      # Recent matches Cricsheet hasn't published yet, from CricketData.org, marked provisional on the
+      # site. Runs every night after the ingest, so a match Cricsheet has now delivered drops out here,
+      # and before the save, since it keeps its matches in the cached database. Never blocks the
+      # Cricsheet update. On-demand pages read D1, so no deploy is needed.
+      - name: Provisional recent matches
+        if: env.CRICKETDATA_API_KEY != '' && env.CLOUDFLARE_API_TOKEN != ''
+        continue-on-error: true
+        run: |
+          python pipeline/fetch_recent.py
+          npx wrangler d1 execute wetwicket --remote --file data/d1/provisional.sql --yes
 
       - name: Save match database
         if: always() && hashFiles('data/wetwicket.sqlite') != ''

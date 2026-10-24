@@ -76,6 +76,9 @@ Supporting pages: `/` (front page), `/tags/<tag>/`, `/authors/<author>/`, `/glos
 The Archive is data rather than editorial. Its pages are rendered on request from Cloudflare D1
 (`export const prerender = false`), while everything else is prerendered. The data comes from
 Cricsheet via `pipeline/ingest.py` and is refreshed nightly by `.github/workflows/nightly.yml`.
+Recent matches Cricsheet hasn't published yet may appear as *provisional* (ids `cd-…`), with the
+result and innings totals from CricketData.org (`pipeline/fetch_recent.py`); they are `noindex`, out
+of the sitemaps and out of every dataset, and Cricsheet's record replaces them.
 Editorial pieces link into the Archive for any match, player or ground they mention.
 
 ## Content model

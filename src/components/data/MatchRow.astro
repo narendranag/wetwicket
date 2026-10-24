@@ -8,7 +8,7 @@ const scores = (team: string) => inns.filter((s) => s.team === team).map((s) => 
 <li>
   <a class="mrow" href={`/matches/${m.id}/`}>
     <span class="date">{fmtDay(m.date)}</span>
-    <span><span class="teams">{m.team1} {scores(m.team1)} v {m.team2} {scores(m.team2)}</span>{m.rain ? <> <span class="pill rain">Rain</span></> : null}</span>
+    <span><span class="teams">{m.team1} {scores(m.team1)} v {m.team2} {scores(m.team2)}</span>{m.rain ? <> <span class="pill rain">Rain</span></> : null}{m.id.startsWith('cd-') ? <> <span class="pill">Provisional</span></> : null}</span>
     <span class="fmt">{showFormat ? `${m.gender === 'female' ? 'W ' : ''}${m.fmt}` : ''}</span>
     <span class="res">{m.outcome_text}{m.event_name ? ` · ${m.event_name}${m.event_detail ? `, ${m.event_detail}` : ''}` : ''}</span>
   </a>

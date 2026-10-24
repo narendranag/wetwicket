@@ -22,7 +22,7 @@ if (gender) { where.push('gender = ?'); params.push(gender); }
 if (rain) where.push("rain != ''");
 const [rows, count, meta] = await Promise.all([
   all(`SELECT * FROM matches WHERE ${where.join(' AND ')} ORDER BY date DESC, id DESC LIMIT ? OFFSET ?`, ...params, PER, (page - 1) * PER),
-  one<{ n: number }>(`SELECT COUNT(*) AS n FROM matches WHERE ${where.join(' AND ')}`, ...params),
+  one<{ n: number; p: number }>(`SELECT COUNT(*) AS n, SUM(id LIKE 'cd-%') AS p FROM matches WHERE ${where.join(' AND ')}`, ...params),
   one<{ value: string }>("SELECT value FROM meta WHERE key = 'latest_match'"),
 ]);
 const pages = Math.ceil((count?.n ?? 0) / PER);
@@ -38,7 +38,7 @@ const link = (over: Record<string, string>) => {
     <ArchiveNav />
     <header class="d-head">
       <h1>Matches</h1>
-      <p class="sub">{(count?.n ?? 0).toLocaleString('en')} matches{meta ? `, up to ${fmtDay(meta.value)}` : ''}. Every one has a full scorecard.</p>
+      <p class="sub">{((count?.n ?? 0) - (count?.p ?? 0)).toLocaleString('en')} matches{meta ? `, up to ${fmtDay(meta.value)}` : ''}. Every one has a full scorecard.{count?.p ? ` Plus ${count.p} more recent, marked provisional: result and totals only, until Cricsheet publishes them.` : ''}</p>
     </header>
     <div class="filters" aria-label="Format">
       <a class="chip" href={link({ fmt: '', page: '' })} aria-current={!fmt ? 'page' : undefined}>All formats</a>

@@ -40,10 +40,14 @@ npm run db:local
 .venv/bin/python pipeline/update.py      # conditional downloads, ingest, D1 delta, explorer data
 npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql
 npm run deploy
+.venv/bin/python pipeline/fetch_recent.py   # provisional recent matches from CricketData.org
+npx wrangler d1 execute wetwicket --remote --file data/d1/provisional.sql
 ```
 
 The nightly workflow needs two repository secrets, `CLOUDFLARE_API_TOKEN` and
 `CLOUDFLARE_ACCOUNT_ID`. Until they are set, it still ingests but skips the Cloudflare steps.
+A third, `CRICKETDATA_API_KEY`, turns on provisional matches: recent results from
+CricketData.org, shown until Cricsheet publishes the same match (see `pipeline/fetch_recent.py`).
 
 ## The Rain Rules pipeline
 
