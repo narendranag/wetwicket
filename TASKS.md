@@ -9,7 +9,6 @@
 
 ## Next
 
-- [ ] **(owner) Delete the three merged branches?** `feat/glossary`, `feat/edge-cache`, `feat/ground-rain-scores` are merged into `main` (1e43baf) but still exist locally and on GitHub. Default: delete both copies (`git branch -d …`, `git push origin --delete …`).
 - [ ] **(owner) Cookie banner wording, and a privacy page?** The banner (in `src/layouts/Base.astro`, live since 2026-10-24) has no privacy page to link to; the site has none. Default: keep the wording; no privacy page for now.
 - [ ] **(owner) CricketData paid plan ($5.99/month) for scorecards on provisional matches?** On the free plan a scorecard costs 10 of the 100 daily calls, so provisional pages show the result and innings totals only. Default: stay on free; the nightly uses 1 call.
 - [ ] **Watch the first nightly with new matches on Ubuntu 26.** GitHub moves `ubuntu-latest` to Ubuntu 26 from 2026-10-19; the runs up to 2026-10-20 were still on ubuntu-24.04. Assessed low risk on 2026-10-21: actions/python-versions ships 3.12.15 for 26.04, the deps are numpy/pandas/scipy wheels, Node and wrangler don't care, and the match-database cache is OS-independent (the pip cache misses once). Migration completes by 2026-11-19. If the Python or wrangler steps break, pin `runs-on: ubuntu-24.04` in `nightly.yml` and `deploy.yml`.
@@ -36,6 +35,7 @@
 
 ## Done
 
+- [x] Merged branches `feat/glossary`, `feat/edge-cache`, `feat/ground-rain-scores` deleted locally and on GitHub (2026-10-24, Narendra's OK); each checked to be in `main` first
 - [x] Glossary, edge cache and ground charts merged and deployed (1e43baf, deploy run 40095310118, 2026-10-24, Narendra's OK). Footer conflict with the consent work resolved by hand (Glossary link + Cookie choice). Smoke-tested together on workerd first; live: `/glossary/` 200, Edgbaston shows Rain by month and First-innings scores over time, a match page answers `X-Edge-Cache: MISS` then `HIT`, banner and provisional matches unchanged #archive
 - [x] First provisional run, triggered by hand at Narendra's request (nightly run 40093855604, 2026-10-24): Cricsheet still quiet; cricScore 1 call, 64 provisional matches into D1 (540 rows). Live: list says "Plus 64 more recent, marked provisional", `cd-` pages 200 with `noindex`, none in the sitemap. Merged branches `feat/consent-gtm` and `feat/provisional-matches` deleted locally #archive
 - [x] Provisional recent matches from CricketData.org merged and deployed (0421648, deploy run 40093635274, 2026-10-24, Narendra's OK). Reviewed before merge; added a guard for feed rows with no id or date (a7a0233). Production D1 gets its first provisional matches from the nightly #archive
