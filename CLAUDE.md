@@ -6,8 +6,8 @@ Co-created by Narendra Nag and Avirook Sen. Repo: github.com/narendranag/wetwick
 This brain follows the fleet's standard: how projects are built is in
 `~/claude-computer/docs/DEV-GUIDELINES.md` (secrets, docs, analytics, tasks), and the tools on the PATH
 are in `~/claude-computer/claude-global/CLAUDE.md`. Start with `TASKS.md` (what's next), then
-`docs/llms.txt` and `docs/01-information-architecture.md` before adding content or pages. Open
-hand-offs: `docs/HANDOFF-2026-10-04-analytics.md` (take GA4 + Tag Manager live).
+`docs/llms.txt` and `docs/01-information-architecture.md` before adding content or pages. No open
+hand-offs (`docs/HANDOFF-2026-10-04-analytics.md` was completed on 2026-10-24).
 
 ## Status
 
@@ -38,8 +38,16 @@ hand-offs: `docs/HANDOFF-2026-10-04-analytics.md` (take GA4 + Tag Manager live).
   nights in a row (`No new matches since the last run`) are normal; compare with the
   `Last-Modified` of `recently_added_7_json.zip` before suspecting the job.
 - **Deploy on push:** verified working.
-- **Analytics** (2026-10-04): GA4 property `properties/556072136` (`G-H14P5LK5VK`, loaded directly
-  by `gtag.js` today); Tag Manager container `GTM-NJSJFFP6` set up but not yet live — see the hand-off.
+- **Analytics** (live 2026-10-24): GA4 property `properties/556072136` (`G-H14P5LK5VK`) through Tag
+  Manager `GTM-NJSJFFP6` (version 2 published), with Consent Mode v2 Advanced: consent denied before
+  the container loads (cookieless `gcs=G100` pings), analytics granted only on the banner's Allow
+  (`G101`, `_ga` cookies), "No thanks" clears them; the answer is in localStorage `ww-consent`, and
+  the footer's "Cookie choice" reopens the banner. The four interactive pieces send `use_interactive`
+  once per page view via `window.useInteractive(piece)` (defined in `Base.astro`). Check a container
+  change with `analytics preview --url … --consent '[data-consent=granted]'` before `analytics publish`.
+- **Provisional matches** (live 2026-10-24): recent matches Cricsheet hasn't published, from
+  CricketData.org (free plan), ids `cd-<uuid>`, badge "Provisional", `noindex`, out of the sitemaps
+  and of every dataset; Cricsheet's record replaces each one (see Nightly, step 5).
 
 ## Architecture
 
@@ -165,6 +173,16 @@ npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
   a change to `astro.config.mjs` it can fail to restart; stop it, delete `node_modules/.vite`, and
   start it again.
 - **Drafts:** `draft: true` pieces show in dev and are left out of production builds.
+- **Preview server:** `npx astro preview` also runs as a daemon and keeps serving the old build after
+  a rebuild: `npx astro preview stop`, then start it again. It runs the Worker on workerd with the
+  local D1, so it is the way to test Archive pages and middleware.
+- **CricketData.org:** use `/v1/cricScore` (every match of the last 7 days, one call). `/v1/matches`
+  is 17k matches grouped by series, not by date, and can't find recent results on the free plan.
+  Scorecards and ball-by-ball cost 10 calls each on the free plan. The cricScore feed has no venue or
+  toss, `t1` isn't always the side that batted first, multi-day matches show one innings a side, and a
+  Test at "Day 1: Stumps" is listed with `ms: result`; `fetch_recent.py` handles all of these.
+- **Cricbuzz:** not a data source. Its `robots.txt` disallows every non-search crawler and its terms
+  forbid scraping (DECISIONS 2026-10-24).
 - **DNS:** the apex TXT record `google-site-verification=…` keeps the Search Console property
   verified. Don't remove it.
 - **Be polite to Cricsheet:** conditional requests, an identifying User-Agent, and no bulk HEAD scans.
