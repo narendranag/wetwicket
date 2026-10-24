@@ -92,7 +92,7 @@ def match_type(m, inns):
 def to_rows(m, intl):
     """One cricScore match -> (matches row, [innings rows]), or None when it can't be placed."""
     (t_a, g_a), (t_b, g_b) = norm(m.get("t1")), norm(m.get("t2"))
-    if not t_a or not t_b:
+    if not t_a or not t_b or not m.get("id") or not re.match(r"\d{4}-\d{2}-\d{2}", m.get("dateTimeGMT") or ""):
         return None
     gender = "female" if "female" in (g_a, g_b) else "male"
     sides = {t_a: innings(m.get("t1s")), t_b: innings(m.get("t2s"))}
