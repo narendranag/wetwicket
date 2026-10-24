@@ -349,8 +349,13 @@ request from Cloudflare D1
 (<code>export const prerender = false</code>), while everything else is
 prerendered. The data comes from Cricsheet via
 <code>pipeline/ingest.py</code> and is refreshed nightly by
-<code>.github/workflows/nightly.yml</code>. Editorial pieces link into
-the Archive for any match, player or ground they mention.</p>
+<code>.github/workflows/nightly.yml</code>. Recent matches Cricsheet
+hasn't published yet may appear as <em>provisional</em> (ids
+<code>cd-…</code>), with the result and innings totals from
+CricketData.org (<code>pipeline/fetch_recent.py</code>); they are
+<code>noindex</code>, out of the sitemaps and out of every dataset, and
+Cricsheet's record replaces them. Editorial pieces link into the Archive
+for any match, player or ground they mention.</p>
 <h2 id="information-architecture-content-model">Content model</h2>
 <p><strong>Piece</strong>
 (<code>src/content/pieces/&lt;section&gt;/&lt;slug&gt;.mdx</code>)</p>

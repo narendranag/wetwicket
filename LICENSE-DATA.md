@@ -24,6 +24,10 @@ are covered by [`LICENSE`](LICENSE) and are not open source.
   conditions and papers by other authors. Their sources are listed in
   [`data/reference/SOURCES.md`](data/reference/SOURCES.md), and Wet Wicket
   grants no licence over them.
+- Provisional matches: recent results and innings totals from
+  [CricketData.org](https://cricketdata.org/), shown in the Archive until
+  Cricsheet publishes the same match. They are never part of these datasets,
+  and Wet Wicket grants no licence over them.
 - Anything that is not data. See [`LICENSE`](LICENSE).
 
 ## How to attribute

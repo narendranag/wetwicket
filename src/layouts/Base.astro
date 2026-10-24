@@ -6,8 +6,9 @@ interface Props {
   title: string;
   description: string;
   fonts?: string;
+  noindex?: boolean;
 }
-const { title, description, fonts } = Astro.props;
+const { title, description, fonts, noindex } = Astro.props;
 const path = Astro.url.pathname;
 const ARCHIVE = ['/matches/', '/players/', '/competitions/', '/grounds/'];
 const NAV = [
@@ -41,6 +42,7 @@ const fullTitle = path === '/' ? title : `${title} · Wet Wicket`;
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{fullTitle}</title>
   <meta name="description" content={description}>
+  {noindex && <meta name="robots" content="noindex">}
   <meta property="og:title" content={title}>
   <meta property="og:description" content={description}>
   <meta property="og:type" content="website">

@@ -9,7 +9,7 @@ export const prerender = false;
 
 const KINDS: Record<string, () => Promise<{ path: string; lastmod?: string }[]>> = {
   matches: async () =>
-    (await all('SELECT id, COALESCE(end_date, date) AS d FROM matches ORDER BY date DESC')).map((m) => ({ path: `/matches/${m.id}/`, lastmod: m.d })),
+    (await all(`SELECT id, COALESCE(end_date, date) AS d FROM matches WHERE id NOT LIKE 'cd-%' ORDER BY date DESC`)).map((m) => ({ path: `/matches/${m.id}/`, lastmod: m.d })),
   players: async () =>
     (await all('SELECT DISTINCT player_id FROM match_players')).map((p) => ({ path: `/players/${p.player_id}/` })),
   places: async () => {

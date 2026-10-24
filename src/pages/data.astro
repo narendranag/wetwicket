@@ -20,6 +20,8 @@ import Base from '../layouts/Base.astro';
       <h2>What we do with it</h2>
       <p>We download Cricsheet's JSON match files and register, load them into our own database, and derive everything else from there: rain flags, over-by-over states, rain-rule replays and the like. Where we add information that Cricsheet does not hold, such as the host country of a ground, we say so on the page. The code for all of this is <a href="https://github.com/narendranag/wetwicket">public on GitHub</a>, so you can read how each dataset is made.</p>
       <p>We check Cricsheet for new matches once a day and download only files that have changed.</p>
+      <h2>Provisional matches</h2>
+      <p>Cricsheet publishes in batches, sometimes a week or more apart. Until a recent match arrives from Cricsheet, the Archive may show its result and innings totals from <a href="https://cricketdata.org/">CricketData.org</a>, marked <em>provisional</em>. Cricsheet's record replaces it as soon as it is published. Provisional matches have no scorecards, are left out of every dataset and analysis on the site, and are not covered by our data licence.</p>
 
       <h2>What is not included</h2>
       <p>Cricsheet currently withholds matches involving the Afghanistan men's team and the Afghanistan Premier League, as <a href="https://cricsheet.org/downloads/">explained on its downloads page</a>. Those matches do not appear on Wet Wicket either.</p>
