@@ -57,10 +57,13 @@ hand-offs: `docs/HANDOFF-2026-10-04-analytics.md` (take GA4 + Tag Manager live).
   2. It ingests them into the cached SQLite and writes `data/d1/delta.sql`.
   3. The workflow applies the delta to D1 and redeploys.
   4. It commits `public/data/rain.json`.
-  5. `pipeline/fetch_recent.py` writes `data/d1/provisional.sql`: recent matches from CricketData.org
-     (free tier, results and totals only) that Cricsheet hasn't published, ids `cd-<uuid>`, marked
-     provisional; applied to D1 every night, so Cricsheet's record replaces each one. Needs the
-     `CRICKETDATA_API_KEY` Actions secret (`cricketdata.api_key` in the store).
+  5. Between the ingest and the cache save, `pipeline/fetch_recent.py` makes one call to
+     CricketData.org's `cricScore` (last 7 days), keeps finished matches Cricsheet hasn't published in a
+     `provisional` table in the cached SQLite (60 days at most), and writes `data/d1/provisional.sql`:
+     ids `cd-<uuid>`, results and innings totals (result only for multi-day matches), marked
+     provisional; Cricsheet's record replaces each one the night it arrives. Afghanistan men's matches
+     are skipped, as Cricsheet withholds them. Needs the `CRICKETDATA_API_KEY` Actions secret
+     (`cricketdata.api_key` in the store).
 - **Deploy:** `.github/workflows/deploy.yml` runs on push to main.
 - **Rain Rules analysis:** `pipeline/rain_rules.py`, `simulate.py`, `analyze.py` and
   `build_site.py` produce `public/data/replay.json`. It is rebuilt by hand, not nightly.

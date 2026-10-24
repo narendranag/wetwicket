@@ -51,6 +51,17 @@ jobs:
         id: update
         run: python pipeline/update.py
 
+      # Recent matches Cricsheet hasn't published yet, from CricketData.org, marked provisional on the
+      # site. Runs every night after the ingest, so a match Cricsheet has now delivered drops out here,
+      # and before the save, since it keeps its matches in the cached database. Never blocks the
+      # Cricsheet update. On-demand pages read D1, so no deploy is needed.
+      - name: Provisional recent matches
+        if: env.CRICKETDATA_API_KEY != '' && env.CLOUDFLARE_API_TOKEN != ''
+        continue-on-error: true
+        run: |
+          python pipeline/fetch_recent.py
+          npx wrangler d1 execute wetwicket --remote --file data/d1/provisional.sql --yes
+
       - name: Save match database
         if: always() && hashFiles('data/wetwicket.sqlite') != ''
         uses: actions/cache/save@v6
@@ -61,16 +72,6 @@ jobs:
       - name: Apply changes to D1
         if: steps.update.outputs.changed == 'true' && env.CLOUDFLARE_API_TOKEN != ''
         run: npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
-
-      # Recent matches Cricsheet hasn't published yet, from CricketData.org, marked provisional on the
-      # site. Runs every night, after the ingest above, so a match Cricsheet has now delivered drops
-      # out here. Never blocks the Cricsheet update. On-demand pages read D1, so no deploy is needed.
-      - name: Provisional recent matches
-        if: env.CRICKETDATA_API_KEY != '' && env.CLOUDFLARE_API_TOKEN != ''
-        continue-on-error: true
-        run: |
-          python pipeline/fetch_recent.py
-          npx wrangler d1 execute wetwicket --remote --file data/d1/provisional.sql --yes
 
       - name: Build and deploy the site
         if: steps.update.outputs.changed == 'true' && env.CLOUDFLARE_API_TOKEN != ''

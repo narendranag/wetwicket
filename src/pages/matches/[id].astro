@@ -55,14 +55,14 @@ const player = (pid: string | null, name: string) => (pid ? `<a href="/players/$
       <h1>{m.team1} v {m.team2}</h1>
       <p class="sub">
         {m.event_detail && <>{m.event_detail} · </>}
-        {m.venue_id ? <a href={`/grounds/${m.venue_id}/`}>{venue?.name ?? m.venue}</a> : m.venue}{m.venue_id && m.city && m.city !== venue?.name ? `, ${m.city}` : ''} ·
+        {m.venue && <>{m.venue_id ? <a href={`/grounds/${m.venue_id}/`}>{venue?.name ?? m.venue}</a> : m.venue}{m.venue_id && m.city && m.city !== venue?.name ? `, ${m.city}` : ''} ·</>}
         {' '}{fmtDay(m.date)}{m.end_date !== m.date ? ` – ${fmtDay(m.end_date)}` : ''}
       </p>
       <p class="result">{m.outcome_text}{m.rain && <> <span class="pill rain" title={m.rain_reason}>Rain {m.rain === 'confirmed' ? 'affected' : 'likely'}</span></>}{provisional && <> <span class="pill">Provisional</span></>}</p>
-      {provisional && <p class="note">Cricsheet hasn't published this match yet, so this is the result and the innings totals from CricketData.org. The full scorecard, worm and runs per over appear when Cricsheet's record arrives and replaces this one.</p>}
+      {provisional && <p class="note">Cricsheet hasn't published this match yet, so this is the result{main.length > 0 ? ' and the innings totals' : ''} from CricketData.org. The full scorecard, worm and runs per over appear when Cricsheet's record arrives and replaces this one.</p>}
     </header>
 
-    <div class="scoreline">
+    {main.length > 0 && <div class="scoreline">
       {main.map((i) => (
         <div>
           <span class="team">{innLabel(i)}</span>
@@ -70,7 +70,7 @@ const player = (pid: string | null, name: string) => (pid ? `<a href="/players/$
           <span class="overs">{oversFrom(i.balls, bpo)} overs{i.target_runs && i.inn > 1 && limited ? ` · target ${i.target_runs}${i.target_overs && i.target_overs < (m.overs || 0) ? ` in ${i.target_overs} overs` : ''}` : ''}</span>
         </div>
       ))}
-    </div>
+    </div>}
 
     {limited && main.length > 0 && !provisional && (
       <section class="grid2">
@@ -159,7 +159,7 @@ const player = (pid: string | null, name: string) => (pid ? `<a href="/players/$
       <dl class="facts">
         {m.toss_winner && <div><dt>Toss</dt><dd>{m.toss_winner}, chose to {m.toss_decision}</dd></div>}
         {pom.length > 0 && <div><dt>Player of the match</dt><dd set:html={pom.map((p) => player(p, nameOf[p] ?? p)).join(', ')} /></div>}
-        <div><dt>Ground</dt><dd>{m.venue_id ? <a href={`/grounds/${m.venue_id}/`}>{venue?.name ?? m.venue}</a> : m.venue}{m.country ? `, ${m.country}` : ''}</dd></div>
+        {m.venue && <div><dt>Ground</dt><dd>{m.venue_id ? <a href={`/grounds/${m.venue_id}/`}>{venue?.name ?? m.venue}</a> : m.venue}{m.country ? `, ${m.country}` : ''}</dd></div>}
         {m.season && <div><dt>Season</dt><dd>{m.season}</dd></div>}
         {officials.umpires && <div><dt>Umpires</dt><dd>{officials.umpires.join(', ')}</dd></div>}
         {officials.match_referees && <div><dt>Match referee</dt><dd>{officials.match_referees.join(', ')}</dd></div>}
