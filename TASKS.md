@@ -5,12 +5,11 @@
 
 ## Now
 
-- [ ] **Resume here:** provisional matches are merged and deployed; first check is the 2026-10-25 nightly (item in Next). Three branches still wait for Narendra's review: `feat/glossary`, `feat/edge-cache`, `feat/ground-rain-scores`.
+- [ ] **Resume here:** provisional matches are live (64 on 2026-10-24) and refresh each nightly. Three branches still wait for Narendra's review: `feat/glossary`, `feat/edge-cache`, `feat/ground-rain-scores`.
 - [ ] **Review and merge three branches** (each deploys on merge; Narendra's OK for each). `feat/glossary` (04500e6): `/glossary/`, 23 terms, footer link — read the wording; it now conflicts trivially with main in the footer line. `feat/edge-cache` (e4a74fd): Cache API middleware for D1 pages, keyed by Worker version, adds a `version_metadata` binding to `wrangler.jsonc`; after deploy, check `X-Edge-Cache: MISS` then `HIT` on a match page. `feat/ground-rain-scores` (2145452): rain by month and first-innings scores by year on ground pages #archive
 
 ## Next
 
-- [ ] **Check the first nightly with provisional matches** (2026-10-25, 00:30 UTC run): the 'Provisional recent matches' step succeeded, about 60 `cd-` matches in D1, the match list says "Plus N more recent, marked provisional", and one `cd-` page renders live with `noindex`. If the step failed, the Cricsheet update still ran (`continue-on-error`); read the step log #archive
 - [ ] **Watch the first nightly with new matches on Ubuntu 26.** GitHub moves `ubuntu-latest` to Ubuntu 26 from 2026-10-19; the runs up to 2026-10-20 were still on ubuntu-24.04. Assessed low risk on 2026-10-21: actions/python-versions ships 3.12.15 for 26.04, the deps are numpy/pandas/scipy wheels, Node and wrangler don't care, and the match-database cache is OS-independent (the pip cache misses once). Migration completes by 2026-11-19. If the Python or wrangler steps break, pin `runs-on: ubuntu-24.04` in `nightly.yml` and `deploy.yml`.
 - [ ] Build: WetWicket content automation — write the workplan (from Google Tasks, 2026-10-08) #gtasks
 - [ ] **Wording on /about/** (noticed 2026-10-24): "The code that produces our numbers is open on GitHub" reads as open source, which the licensing convention (2026-10-01) rules out. Default: "The code that produces our numbers is public on GitHub", matching LICENSE. Narendra's copy, so his call.
@@ -35,6 +34,7 @@
 
 ## Done
 
+- [x] First provisional run, triggered by hand at Narendra's request (nightly run 40093855604, 2026-10-24): Cricsheet still quiet; cricScore 1 call, 64 provisional matches into D1 (540 rows). Live: list says "Plus 64 more recent, marked provisional", `cd-` pages 200 with `noindex`, none in the sitemap. Merged branches `feat/consent-gtm` and `feat/provisional-matches` deleted locally #archive
 - [x] Provisional recent matches from CricketData.org merged and deployed (0421648, deploy run 40093635274, 2026-10-24, Narendra's OK). Reviewed before merge; added a guard for feed rows with no id or date (a7a0233). Production D1 gets its first provisional matches from the nightly #archive
 - [x] Consent Mode v2 Advanced live on wetwicket.com (2026-10-24, Narendra's OK): `analytics preview` on the branch build passed (G100 before consent, G101 after, `use_interactive` with `piece`); `feat/consent-gtm` merged (031479a), deploy run 40087830619 succeeded, `analytics publish` shipped GTM version 2. Live check: banner on first visit, `gcs=G100` and no cookies before an answer, `_ga` + `_ga_H14P5LK5VK` after Allow, cleared after No thanks, `use_interactive` only on first use. Replaces the stale "Take GA4 + Tag Manager live" #analytics
 
