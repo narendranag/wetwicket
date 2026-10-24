@@ -5,7 +5,7 @@
 
 ## Now
 
-- [ ] **Resume here:** nothing half done. Next is Narendra's review of three local branches (item below): `feat/glossary` (04500e6), `feat/edge-cache` (e4a74fd), `feat/ground-rain-scores` (2145452), each built and tested 2026-10-24, none pushed. Provisional matches (`pipeline/fetch_recent.py`) and Consent Mode v2 are live; the nightly keeps provisional matches fresh on its own.
+- [ ] **Resume here:** nothing half done. Next is Narendra's review of three local branches (item below): `feat/glossary` (04500e6), `feat/edge-cache` (e4a74fd), `feat/ground-rain-scores` (2145452), each built and tested 2026-10-24, pushed to GitHub but not merged (only `main` deploys). Provisional matches (`pipeline/fetch_recent.py`) and Consent Mode v2 are live; the nightly keeps provisional matches fresh on its own.
 - [ ] (owner) **Review and merge three branches** (each deploys on merge; Narendra's OK for each). `feat/glossary` (04500e6): `/glossary/`, 23 terms, footer link — read the wording; it now conflicts trivially with main in the footer line. `feat/edge-cache` (e4a74fd): Cache API middleware for D1 pages, keyed by Worker version, adds a `version_metadata` binding to `wrangler.jsonc`; after deploy, check `X-Edge-Cache: MISS` then `HIT` on a match page. `feat/ground-rain-scores` (2145452): rain by month and first-innings scores by year on ground pages #archive
 
 ## Next
