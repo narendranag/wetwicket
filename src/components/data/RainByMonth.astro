@@ -1,0 +1,25 @@
+---
+// Share of a ground's matches that were rain-hit, by the month they started; one bar per month.
+interface Props { months: { n: number; rain: number }[] }
+const { months } = Astro.props;
+const NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const W = 720, H = 170, L = 36, R = 8, T = 16, B = 26;
+const bw = (W - L - R) / 12;
+// A month with fewer than MIN matches is drawn pale and does not set the scale: one wet game reads as 100%.
+const MIN = 5;
+const top = Math.max(0.2, Math.ceil(Math.max(...months.map((m) => (m.n >= MIN ? m.rain / m.n : 0))) * 5) / 5);
+const y = (p: number) => T + (1 - p / top) * (H - T - B);
+const yTicks = [0, top / 2, top];
+---
+<div class="chart">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Share of matches rain-hit, by month">
+    {yTicks.map((v) => (<><line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke="var(--grid)" /><text x={L - 6} y={y(v) + 4} text-anchor="end">{Math.round(v * 100)}%</text></>))}
+    {months.map((m, i) => (
+      <g>
+        <title>{m.n ? `${NAMES[i]}: ${m.rain} of ${m.n} match${m.n === 1 ? '' : 'es'} rain-hit` : `${NAMES[i]}: no matches`}</title>
+        <text x={L + (i + 0.5) * bw} y={H - 8} text-anchor="middle" fill={m.n ? undefined : 'var(--line)'}>{NAMES[i]}</text>
+        {m.n > 0 && <rect x={L + i * bw + 3} y={y(Math.min(top, m.rain / m.n))} width={bw - 6} height={Math.max(m.rain ? 1 : 0, y(0) - y(Math.min(top, m.rain / m.n)))} fill={m.n >= MIN ? "var(--accent)" : "var(--likely)"} rx="1.5" />}
+      </g>
+    ))}
+  </svg>
+</div>

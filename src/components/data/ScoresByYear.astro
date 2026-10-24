@@ -1,0 +1,26 @@
+---
+// Average first-innings score at a ground by year, for one format; one bar per year with games.
+interface Props { fmt: string; years: { year: number; avg: number; n: number }[] }
+const { fmt, years } = Astro.props;
+const first = years[0].year, last = years[years.length - 1].year;
+const span = last - first + 1;
+const W = 720, H = 150, L = 36, R = 8, T = 16, B = 26;
+const bw = (W - L - R) / span;
+const yMax = Math.ceil(Math.max(...years.map((d) => d.avg)) / 50) * 50;
+const y = (r: number) => T + (1 - r / yMax) * (H - T - B);
+const yTicks = [0, yMax / 2, yMax];
+const xStep = span <= 12 ? 2 : span <= 30 ? 5 : 10;
+const xTicks = Array.from({ length: span }, (_, i) => first + i).filter((yr) => yr % xStep === 0);
+---
+<div class="chart">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${fmt}: average first-innings score by year`}>
+    {yTicks.map((v) => (<><line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke="var(--grid)" /><text x={L - 6} y={y(v) + 4} text-anchor="end">{v}</text></>))}
+    {xTicks.map((yr) => <text x={L + (yr - first + 0.5) * bw} y={H - 8} text-anchor="middle">{yr}</text>)}
+    {years.map((d) => (
+      <g>
+        <title>{`${d.year}: ${d.avg} on average, ${d.n} match${d.n === 1 ? '' : 'es'}`}</title>
+        <rect x={L + (d.year - first) * bw + 1} y={y(d.avg)} width={Math.max(1, bw - 2)} height={y(0) - y(d.avg)} fill="var(--accent)" rx="1.5" />
+      </g>
+    ))}
+  </svg>
+</div>
