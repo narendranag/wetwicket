@@ -175,7 +175,9 @@ function renderExamples() {
   $("t-ex").innerHTML = `<table><thead><tr><th>Date</th><th>Chase</th><th class="r">After 30</th>${RULES.map(R => `<th class="r">${R.short} par</th>`).join("")}<th>Real result</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+let ready = false; // the on-load render is not a use
 function render() {
+  if (ready) window.useInteractive?.("replay");
   document.querySelectorAll("#fam button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === fam));
   renderFindings(); renderResources(); renderPar(); renderFlips(); renderSE();
 }
@@ -185,4 +187,5 @@ $("fam").addEventListener("click", e => {
   render();
 });
 render(); renderExamples();
+ready = true;
 })();
