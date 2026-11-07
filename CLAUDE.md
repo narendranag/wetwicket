@@ -190,3 +190,7 @@ npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
 - **DNS:** the apex TXT record `google-site-verification=…` keeps the Search Console property
   verified. Don't remove it.
 - **Be polite to Cricsheet:** conditional requests, an identifying User-Agent, and no bulk HEAD scans.
+
+## Rules
+
+- **Delegate to Sonnet and Haiku subagents** (owner's rule, 2026-11-07): work that can be delegated or run in parallel goes to a subagent with `model: "sonnet"` (building, editing, research, reviews) or `model: "haiku"` (mechanical lookups, searches, bulk reformatting). This session keeps the decisions, the conversation with the owner, and the review of what comes back. Detail: `~/claude-computer/claude-global/CLAUDE.md`.
