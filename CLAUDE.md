@@ -189,4 +189,5 @@ npx wrangler d1 execute wetwicket --remote --file data/d1/delta.sql --yes
   forbid scraping (DECISIONS 2026-10-24).
 - **DNS:** the apex TXT record `google-site-verification=…` keeps the Search Console property
   verified. Don't remove it.
+- **Errors** (live 2026-11-24): the Worker's Tail Worker is `crashyard` (`tail_consumers` in `wrangler.jsonc`), so uncaught exceptions land at crashyard.marain.space, project `wetwicket`. It is a non-versioned setting; `scripts/deploy-ci.sh`'s `versions deploy` applies it. No Sentry SDK; if one is added, run `crashyard project set wetwicket --no-worker-exceptions`.
 - **Be polite to Cricsheet:** conditional requests, an identifying User-Agent, and no bulk HEAD scans.
