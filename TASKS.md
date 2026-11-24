@@ -5,7 +5,7 @@
 
 ## Now
 
-- [ ] **Resume here:** nothing half done; every branch is merged and live (2026-10-24). Next are the owner items in Next, and the plans marked "plan ready, owner's OK" — pick one with Narendra.
+- [ ] **Resume here:** nothing half done; every branch is merged and live (2026-11-24). Next are the owner items in Next, and the plans marked "plan ready, owner's OK" — pick one with Narendra.
 
 ## Next
 
@@ -35,6 +35,7 @@
 
 ## Done
 
+- [x] Worker errors go to crashyard: `tail_consumers` in `wrangler.jsonc` (a225a92, deploy run 45325102086, 2026-11-24, crashyard brain's brief); live setting checked, crashyard session told
 - [x] Merged branches `feat/glossary`, `feat/edge-cache`, `feat/ground-rain-scores` deleted locally and on GitHub (2026-10-24, Narendra's OK); each checked to be in `main` first
 - [x] Glossary, edge cache and ground charts merged and deployed (1e43baf, deploy run 40095310118, 2026-10-24, Narendra's OK). Footer conflict with the consent work resolved by hand (Glossary link + Cookie choice). Smoke-tested together on workerd first; live: `/glossary/` 200, Edgbaston shows Rain by month and First-innings scores over time, a match page answers `X-Edge-Cache: MISS` then `HIT`, banner and provisional matches unchanged #archive
 - [x] First provisional run, triggered by hand at Narendra's request (nightly run 40093855604, 2026-10-24): Cricsheet still quiet; cricScore 1 call, 64 provisional matches into D1 (540 rows). Live: list says "Plus 64 more recent, marked provisional", `cd-` pages 200 with `noindex`, none in the sitemap. Merged branches `feat/consent-gtm` and `feat/provisional-matches` deleted locally #archive
