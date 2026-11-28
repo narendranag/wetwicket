@@ -11,5 +11,5 @@ const LINKS = [['/matches/', 'Matches'], ['/players/', 'Players'], ['/competitio
   .archive-nav a { font: 600 15px var(--body); color: var(--muted); text-decoration: none; padding-bottom: 2px; border-bottom: 2px solid transparent; }
   .archive-nav a:hover { color: var(--ink); }
   .archive-nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
-  .kicker { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  @media (pointer: coarse) { .archive-nav a { display: inline-flex; align-items: center; min-height: 40px; } }
 </style>

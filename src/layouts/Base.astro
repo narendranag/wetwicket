@@ -41,6 +41,8 @@ const fullTitle = path === '/' ? title : `${title} · Wet Wicket`;
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{fullTitle}</title>
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#172027" media="(prefers-color-scheme: dark)">
   <meta name="description" content={description}>
   {noindex && <meta name="robots" content="noindex">}
   <meta property="og:title" content={title}>

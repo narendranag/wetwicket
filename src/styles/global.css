@@ -12,7 +12,7 @@
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root {
     color-scheme: dark;
     --bg: #0f1418; --surface: #172027; --ink: #e4e9ed; --muted: #93a1ad; --line: #2a3540; --grid: #222c35;
     --accent: #6fa8dc; --accent-ink: #0f1418; --chip: #212c35; --likely: #3c5c7a;
@@ -20,14 +20,6 @@
     --pos: #3987e5; --neg: #e66767; --mid: #383835;
     --w0: #cde2fb; --w2: #9ec5f4; --w4: #6da7ec; --w6: #3987e5; --w8: #256abf;
   }
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: #0f1418; --surface: #172027; --ink: #e4e9ed; --muted: #93a1ad; --line: #2a3540; --grid: #222c35;
-  --accent: #6fa8dc; --accent-ink: #0f1418; --chip: #212c35; --likely: #3c5c7a;
-  --r-se: #3987e5; --r-arr: #d95926; --r-refit: #199e70; --r-mpo: #c98500; --r-pro: #d55181; --r-proavg: #008300;
-  --pos: #3987e5; --neg: #e66767; --mid: #383835;
-  --w0: #cde2fb; --w2: #9ec5f4; --w4: #6da7ec; --w6: #3987e5; --w8: #256abf;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
@@ -66,7 +58,7 @@ a { color: var(--accent); }
 /* Shared editorial pieces: page heads, cards, series bars. */
 .page { max-width: 1180px; margin: 0 auto; padding-inline: 20px; padding-block: 36px 72px; display: grid; gap: 40px; }
 .page-head { display: grid; gap: 10px; max-width: 70ch; }
-.kicker { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.kicker, .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .kicker a { color: inherit; }
 .page-head h1 { font: 700 clamp(40px, 7vw, 68px)/.95 var(--display); text-transform: uppercase; margin: 0; text-wrap: balance; }
 .page-head p { margin: 0; font-size: 19px; color: var(--muted); }
@@ -93,3 +85,28 @@ a { color: var(--accent); }
 .prose p, .prose ul, .prose ol { margin: 0 0 1em; }
 .byline { font-size: 15px; color: var(--muted); }
 .byline b { color: var(--ink); }
+
+/* Shared components: one definition for the pieces, the Archive and the pages. */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: 600 14px/1 var(--body); padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--chip); color: var(--ink); text-decoration: none; cursor: pointer; }
+.chip:hover { border-color: var(--accent); }
+.chip[aria-pressed="true"], .chip[aria-current="page"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--chip); }
+.seg button { font: 600 14px/1 var(--body); padding: 8px 14px; border: none; background: none; color: var(--ink); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.t1 { background: var(--r-se); }
+.t2 { background: var(--r-arr); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.muted { color: var(--muted); }
+.lede { max-width: 68ch; color: var(--muted); }
+.hint { font-size: 13px; color: var(--muted); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+
+/* Touch: at least 40px to hit. Fine pointers are unchanged. */
+@media (pointer: coarse) {
+  .chip { display: inline-flex; align-items: center; min-height: 40px; }
+  .seg button { min-height: 40px; }
+  .site-nav ul a { min-height: 40px; align-content: center; }
+}
