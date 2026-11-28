@@ -5,7 +5,7 @@
 
 ## Now
 
-- [ ] **Resume here:** nothing half done; every branch is merged and live (2026-11-24). Next are the owner items in Next, and the plans marked "plan ready, owner's OK" — pick one with Narendra.
+- [ ] **Resume here:** check the 2026-11-29 nightly (`gh run list --workflow nightly.yml --limit 2`). The 2026-11-28 run (46089472439) failed in `pipeline/ingest.py:312` with `KeyError: 'identifier'`: a Register fetch came back 200 with a non-CSV body although Cricsheet's files were unchanged since 2026-11-25 (both parse fine now); nothing was committed, D1 untouched. If 11-29 is green it was a one-night glitch: tick this. If it fails the same way, add a header check in `fetch()`/the Register step of `pipeline/update.py` that keeps the previous file and warns (proposed, owner chose wait-and-see). Then the owner items in Next and the "plan ready, owner's OK" plans. 📅 2026-11-29 #nightly
 
 ## Next
 
@@ -36,6 +36,7 @@
 
 ## Done
 
+- [x] Design drift fixes (FIX 1, 2, 3, 5, 6, 7, KEEP 4) merged with the owner's OK and deployed: c90b75a, deploy run 46147703157 green, 9 live pages 200 (2026-11-28); worktree and local `design-drift` branch removed, remote branch kept
 - [x] Worker errors go to crashyard: `tail_consumers` in `wrangler.jsonc` (a225a92, deploy run 45325102086, 2026-11-24, crashyard brain's brief); live setting checked, crashyard session told
 - [x] Merged branches `feat/glossary`, `feat/edge-cache`, `feat/ground-rain-scores` deleted locally and on GitHub (2026-10-24, Narendra's OK); each checked to be in `main` first
 - [x] Glossary, edge cache and ground charts merged and deployed (1e43baf, deploy run 40095310118, 2026-10-24, Narendra's OK). Footer conflict with the consent work resolved by hand (Glossary link + Cookie choice). Smoke-tested together on workerd first; live: `/glossary/` 200, Edgbaston shows Rain by month and First-innings scores over time, a match page answers `X-Edge-Cache: MISS` then `HIT`, banner and provisional matches unchanged #archive
