@@ -22,9 +22,10 @@ colours. Only the light and dark theme pair, the 2px focus ring with a 2px offse
 
 ## Tokens
 
-All on `:root` in `src/styles/global.css`. Dark applies under `prefers-color-scheme: dark` unless
-`<html data-theme="light">`, and always under `data-theme="dark"`. Components use the variables,
-never the hex values.
+All on `:root` in `src/styles/global.css`. Dark applies under `prefers-color-scheme: dark`, in one
+block; the site follows the system setting and has no theme switch. Components use the variables,
+never the hex values. `Base.astro` sets `theme-color` to `--surface` for each scheme (`#ffffff`,
+`#172027`), so a phone's browser bar matches the nav bar.
 
 ### Surfaces and text
 
@@ -58,15 +59,19 @@ in both themes). Never reuse a rule's colour for something else, except the team
 - **Teams:** Team 1 is `--r-se` (blue), Team 2 is `--r-arr` (orange), on every match chart, strip
   and swatch.
 - **Diverging:** `--pos` (`#2a78d6` / `#3987e5`), `--neg` (`#e34948` / `#e66767`), `--mid`
-  (`#f0efec` / `#383835`). `--neg` doubles as the error and wicket colour.
-- **Sequential blues:** `--w0` … `--w8` (light runs dark to pale, dark reverses it). Defined, not
-  used today.
+  (`#f0efec` / `#383835`). `--neg` doubles as the error and wicket colour. `--mid` is the
+  diverging scale's neutral, kept for a diverging heatmap.
+- **Sequential blues:** `--w0` … `--w8` (light runs dark to pale, dark reverses it). Reserved for
+  heatmaps and other sequential scales; nothing uses them yet, and they stay (owner, 2026-11-28).
+  Use these rather than inventing a new ramp.
 
 ### Shape, space, depth
 
 - **Radius:** 6px for cards, panels, tables, strips and score blocks; 4px for buttons, inputs, step
   buttons and tooltips; 3px for pills and swatches; 999px for chips and segmented controls; 50%
-  for the ball markers in Beat the Par.
+  for the ball markers in Beat the Par. The rule for a new control: a choice among options (a
+  filter, a toggle, an example) is a 999px pill; an action or a field (a button, an input, a step
+  button) is 4px.
 - **Borders:** 1px `--line` on every surface. Stacked stat or score cells sit in a grid with a 1px
   gap over a `--line` background, so the borders read as hairlines (`.stats`, `.scoreline`,
   `.findings`, `.scores`).
@@ -78,8 +83,9 @@ in both themes). Never reuse a rule's colour for something else, except the team
 - **Width:** 1180px for the site chrome, editorial pages, the Archive, Rain Stopped Play and the
   calculator; 1040px for Who Wins When It Rains; 760px for Beat the Par. 20px side padding.
   Reading text at 68ch, ledes at 62–70ch.
-- **Hit targets:** 44px for the game's step and submit buttons; chips and nav links are smaller
-  (about 30px).
+- **Hit targets:** 44px for the game's step and submit buttons. On touch (`@media (pointer:
+  coarse)`), chips, segment buttons, nav and Archive-nav links, the Archive search and the pieces'
+  inputs and selects are at least 40px; with a mouse they keep their compact size (about 30px).
 
 ## Type
 
@@ -120,6 +126,14 @@ Bold is weight 600, never 700, in body text.
 
 ## Components
 
+**Where styles live.** `global.css` holds the tokens, the site chrome and every shared component:
+`.kicker`/`.eyebrow`, `.chip`/`.chips`, `.seg`, `.swatch`, `.t1`/`.t2`, `.legend`, `.panel`,
+`.muted`, `.lede`, `.hint`, `.card`. A piece's own stylesheet (`rain.css`, `replay.css`, `par.css`,
+`calc.css`) holds only what is unique to it, and every selector in it is scoped under the piece's
+root class (`.app-rain`, `.app-replay`, `.app-par`, `.app-calc`), so nothing reaches the nav, the
+footer or another piece. A new piece gets its own `.app-<name>` root and follows the same rule.
+`data.css` holds the Archive's own components.
+
 - **Site nav** (`Base.astro`): a `--surface` bar with a `--line` rule under it. The wordmark (a
   blue raindrop with a ball's stitched seam, then "WET WICKET" in display 700 22px), then each
   section as two lines: the vernacular name in display (The Nets) over its plain name in 10.5px
@@ -147,8 +161,11 @@ Bold is weight 600, never 700, in body text.
   hover. Wide tables scroll inside their panel; long ones get a sticky head.
 - **Match row** (`MatchRow`): a grid of a mono date, the teams in 600, the format in mono, the result
   muted on the next line; `--bg` on hover; one column under 560px.
-- **Chip:** a 999px pill on `--chip` with a `--line` border, body 600 14px. Pressed or current:
-  `--accent` fill, `--accent-ink` text. Used for filters and examples.
+- **Chip:** a 999px pill on `--chip` with a `--line` border, body 600 14px, padding 7px 12px.
+  Hover turns the border `--accent`. Pressed or current: `--accent` fill, `--accent-ink` text. Used
+  for filters and examples.
+- **Kicker / eyebrow:** mono 500 12px, letter-spacing 0.08em, uppercase, `--muted`; the two class
+  names are the same style.
 - **Segmented control** (`.seg`): chips joined in one 999px track; the pressed segment `--accent`.
 - **Buttons:** primary is `--accent` fill, radius 4, body 600 14–16px. Secondary is `--chip` with a
   `--line` border. Quiet actions ("Clear filters", "Add a stoppage") are underlined `--accent` text.
@@ -204,23 +221,9 @@ No photographs or illustrations. The only drawn mark is the wordmark's raindrop 
 
 ## Drift to decide
 
-1. **Every piece's stylesheet repeats the base styles** (`.wrap`, `h1`, `.eyebrow`, `.chip`, `.seg`,
-   `.swatch`, `.panel`, `.legend`, `table`), and the copies disagree: `.eyebrow` is mono 500 in
-   `replay.css` and 600 elsewhere; chip padding is 7px 11px or 7px 12px; table cell padding differs
-   in each file. *Recommendation:* move the shared ones into `global.css` once, at the 500 weight and
-   7px 12px, and leave only what is unique in each piece's file.
-2. **Bare element selectors in the piece stylesheets** (`header`, `footer`, `h1`, `table`, `p`,
-   `section`) aren't scoped. `rain.css`'s `footer { … max-width: 80ch; font-size: 13px }` reaches the
-   site footer on Rain Stopped Play. *Recommendation:* scope them under the piece's wrapper class.
-3. **`data-theme` is supported but nothing sets it**, and the dark values are written out twice in
-   `global.css`. *Recommendation:* keep following the system setting, drop the duplicate block, or
-   add a theme switch if wanted.
-4. **Unused tokens:** `--w0` … `--w8` and `--mid`. *Recommendation:* keep them while a heatmap is
-   planned; otherwise remove.
-5. **Radius on controls is mixed:** 4px for buttons and inputs, 999px for chips and segments, 4px
-   for the game's step buttons. Intentional enough, but write it down if a new control is added:
-   pills for choices, 4px for actions and fields.
-6. **Hit targets:** chips, nav links and the calculator's inputs are under 44px on a phone.
-   *Recommendation:* at least 40px on coarse pointers.
-7. **No `theme-color`** in `Base.astro`. *Recommendation:* add one per scheme (`--surface`, since the
-   nav bar is the top of the page).
+None open. The first audit's items were settled by the owner on 2026-11-28: the unused sequential
+and diverging tokens are kept (see Data colours); the rest were fixed and are recorded above.
+
+Still different between files, deliberately: table cell padding (each table is sized for its
+content), and `MatchStrip.astro`'s own copy of the team swatches (a scoped style in a Classics
+component).
